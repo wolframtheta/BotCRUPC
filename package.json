@@ -1,0 +1,23 @@
+{
+  "name": "bot-crupc",
+  "version": "1.0.0",
+  "description": "A telegram bot for the crupc to have a very useful experience with them.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wolframtheta/BotCRUPC.git"
+  },
+  "author": "Xavier Marques",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wolframtheta/BotCRUPC/issues"
+  },
+  "homepage": "https://github.com/wolframtheta/BotCRUPC#readme",
+  "dependencies": {
+    "nodejs": "0.0.0",
+    "telegraf": "^3.12.1"
+  }
+}
