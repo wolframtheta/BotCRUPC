@@ -55,7 +55,7 @@ app.on('sticker', (ctx) => {
     }
   } 
   else {
-    ctx.reply(dict['8']);
+    ctx.reply(dict['5']);
   }
 })
 app.startPolling()
