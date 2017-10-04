@@ -11,4 +11,4 @@
 			'8': 'A ti no te hago ni puto caso'
 		};
 	};
-});
+})();

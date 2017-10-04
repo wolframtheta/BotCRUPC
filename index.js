@@ -2,7 +2,7 @@ var Telegraf = require('telegraf')
 var fs = require('fs')
 var path = require('path');
 
-var lang = require('lang-default'); // Change this to change the language
+var lang = require('./lang-default'); // Change this to change the language
 var dict = lang.vortaro();
 
 
