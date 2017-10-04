@@ -11,7 +11,7 @@ app.command('isopen', ({ from, reply }) => {
   else reply("El club esta cerrado");
 })
 app.hears('hi', (ctx) => ctx.reply('Hey there!'))
-app.on('sticker', (ctx) => {
+app.hears('sticker', (ctx) => {
   var file = fs.readFileSync("stateCRUPC", 'utf-8');
   if (ctx.message.sticker.emoji == '🚪' && ctx.message.sticker.set_name == "CRUPC") {
     console.log("file:" + file);
