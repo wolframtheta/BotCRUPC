@@ -10,7 +10,7 @@ app.command('isopen', (ctx) => {
   if (isopen) ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADRgADZhkVBXvnbcBrbN7EAg');
   else ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADSAADZhkVBR-6hyRG6fjYAg');
 })
-app.command('countHolis', (ctx) => {
+app.command('countholis', (ctx) => {
   var file = fs.readFileSync("counterHoli", 'utf-8');
   ctx.reply(file + ' veces hemos dicho Holiiiiiiiiiiiiiiii! Putos enfermos...');
 })
