@@ -10,8 +10,20 @@ app.command('isopen', (ctx) => {
   if (isopen) ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADRgADZhkVBXvnbcBrbN7EAg');
   else ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADSAADZhkVBR-6hyRG6fjYAg');
 })
-app.hears('Hi', (ctx) => ctx.reply('Holiiiiiiiiiiiiiiii!!'))
-app.hears('hi', (ctx) => ctx.reply('Holiiiiiiiiiiiiiiii!!'))
+app.command('countHolis', (ctx) => {
+  var file = fs.readFileSync("counterHoli", 'utf-8');
+  ctx.reply(file + ' veces hemos dicho Holiiiiiiiiiiiiiiii! Putos enfermos...');
+})
+app.hears('Hi', (ctx) => holis(ctx))
+app.hears('hi', (ctx) => holis(ctx))
+
+function holis(ctx) {
+  var file = fs.readFileSync("counterHoli", 'utf-8');
+  file++;
+  fs.writeFileSync("counterHoli", file);
+  ctx.reply('Holiiiiiiiiiiiiiiii!!')
+
+}
 app.on('text', (ctx) => {
   if (ctx.message.chat.id > 0 && ctx.message.from.username != 'XvaiKawaii') {
     ctx.reply('A ti no te hago ni puto caso');
