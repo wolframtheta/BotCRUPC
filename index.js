@@ -20,10 +20,14 @@ const bot = new Telebot("457148721:AAH59U4s3FEVqiE_V43koSUSG0QEVZVp_HI");
 // });
 // bot.hears(dict['2'], (ctx) => holis(ctx));
 // bot.hears(dict['3'], (ctx) => holis(ctx));
-
+bot.on('/start', (ctx) => {
+  fs.writeFileSync("stateCRUPC", "closed");
+  fs.writeFileSync("counterHoli", "0");
+  ctx.reply.text("Holi crupcero!");
+});
 bot.on('/isopen', (ctx) => {
   var file = fs.readFileSync("stateCRUPC", 'utf-8');
-  var isopen = (file == "open\n") ? true : false;
+  var isopen = (file == "open") ? true : false;
   if (isopen) bot.sendSticker(ctx.chat.id, 'CAADBAADRgADZhkVBXvnbcBrbN7EAg');
   else bot.sendSticker(ctx.chat.id, 'CAADBAADSAADZhkVBR-6hyRG6fjYAg');
 });
@@ -43,8 +47,8 @@ bot.on('sticker', (ctx) => {
     var file = fs.readFileSync("stateCRUPC", 'utf-8');
     if (ctx.sticker.emoji == '🚪' && ctx.sticker.set_name == "CRUPC") {
       console.log("file:" + file);
-      if (file == "closed\n") {
-        fs.writeFileSync("stateCRUPC", "open\n");
+      if (file == "closed") {
+        fs.writeFileSync("stateCRUPC", "open");
         console.log("write");
       }
       console.log("open");
@@ -52,8 +56,8 @@ bot.on('sticker', (ctx) => {
     }
     else if (ctx.sticker.emoji == '😒' && ctx.sticker.set_name == "CRUPC") {
       console.log("file:" + file);
-      if (file == "open\n") {
-        fs.writeFileSync("stateCRUPC", "closed\n");
+      if (file == "open") {
+        fs.writeFileSync("stateCRUPC", "closed");
         console.log("write");
       }
       console.log("closed");
