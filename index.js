@@ -1,61 +1,74 @@
-var Telegraf = require('telegraf')
-var fs = require('fs')
+var Telebot = require('telebot');
+var fs = require('fs');
 var path = require('path');
 
-var lang = require('./lang-default'); // Change this to change the language
+var lang = require('./lang/lang-default'); // Change this to change the language
 var dict = lang.vortaro();
 
 
-const app = new Telegraf("457148721:AAH59U4s3FEVqiE_V43koSUSG0QEVZVp_HI")
-app.command('isopen', (ctx) => {
+const bot = new Telebot("457148721:AAH59U4s3FEVqiE_V43koSUSG0QEVZVp_HI");
+
+// bot.command('isopen', (ctx) => {
+//   var file = fs.readFileSync("stateCRUPC", 'utf-8');
+//   var isopen = (file == "open") ? true : false;
+//   if (isopen) ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADRgADZhkVBXvnbcBrbN7EAg');
+//   else ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADSAADZhkVBR-6hyRG6fjYAg');
+// });
+// bot.command('countholis', (ctx) => {
+//   var file = fs.readFileSync("counterHoli", 'utf-8');
+//   ctx.reply(file + dict['1']);
+// });
+// bot.hears(dict['2'], (ctx) => holis(ctx));
+// bot.hears(dict['3'], (ctx) => holis(ctx));
+
+bot.on('/isopen', (ctx) => {
   var file = fs.readFileSync("stateCRUPC", 'utf-8');
-  var isopen = (file == "open") ? true : false;
-  if (isopen) ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADRgADZhkVBXvnbcBrbN7EAg');
-  else ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADSAADZhkVBR-6hyRG6fjYAg');
-})
-app.command('countholis', (ctx) => {
+  var isopen = (file == "open\n") ? true : false;
+  if (isopen) bot.sendSticker(ctx.chat.id, 'CAADBAADRgADZhkVBXvnbcBrbN7EAg');
+  else bot.sendSticker(ctx.chat.id, 'CAADBAADSAADZhkVBR-6hyRG6fjYAg');
+});
+bot.on('/countholis', (ctx) => {
   var file = fs.readFileSync("counterHoli", 'utf-8');
-  ctx.reply(file + dict['1']);
-})
-app.hears(dict['2'], (ctx) => holis(ctx))
-app.hears(dict['3'], (ctx) => holis(ctx))
+  ctx.reply.text(file + dict['1']);
+});
+bot.on('/eurobeat', (ctx) => {
+  ctx.reply.text('https://www.youtube.com/watch?v=7u3jv7zC4kU&list=PLGdEbnOoiEOOaFFYKh3A66wOUlrHUwzTs');
+});
+
+bot.on(/hi/, (ctx) => holis(ctx));
+bot.on(/Hi/, (ctx) => holis(ctx));
+bot.on('sticker', (ctx) => {
+
+  if (ctx.chat.id < 0 || (ctx.chat.id > 0 && ctx.from.username == 'XvaiKawaii')) {
+    var file = fs.readFileSync("stateCRUPC", 'utf-8');
+    if (ctx.sticker.emoji == '🚪' && ctx.sticker.set_name == "CRUPC") {
+      console.log("file:" + file);
+      if (file == "closed\n") {
+        fs.writeFileSync("stateCRUPC", "open\n");
+        console.log("write");
+      }
+      console.log("open");
+      ctx.reply.text(dict['6']);
+    }
+    else if (ctx.sticker.emoji == '😒' && ctx.sticker.set_name == "CRUPC") {
+      console.log("file:" + file);
+      if (file == "open\n") {
+        fs.writeFileSync("stateCRUPC", "closed\n");
+        console.log("write");
+      }
+      console.log("closed");
+      ctx.reply.text(dict['7']);
+    }
+  } 
+  else {
+  ctx.reply.text(dict['5']);
+  }
+});
+bot.start();
 
 function holis(ctx) {
   var file = fs.readFileSync("counterHoli", 'utf-8');
   file++;
   fs.writeFileSync("counterHoli", file);
-  ctx.reply(dict['4'])
-
+  ctx.reply.text(dict['4'])
 }
-app.on('text', (ctx) => {
-  if (ctx.message.chat.id > 0 && ctx.message.from.username != 'XvaiKawaii') {
-    ctx.reply(dict['5']);
-  }
-})
-app.on('sticker', (ctx) => {
-
-  if (ctx.message.chat.id < 0 || (ctx.message.chat.id > 0 && ctx.message.from.username == 'XvaiKawaii')) {
-    var file = fs.readFileSync("stateCRUPC", 'utf-8');
-    if (ctx.message.sticker.emoji == '🚪' && ctx.message.sticker.set_name == "CRUPC") {
-      console.log("file:" + file);
-      if (file == "closed") {
-        fs.writeFileSync("stateCRUPC", "open");
-        console.log("write");
-      }
-      console.log("open");
-      ctx.reply(dict['6'])
-    }
-    else if (ctx.message.sticker.emoji == '😒' && ctx.message.sticker.set_name == "CRUPC") {
-      if (file == "open") {
-        fs.writeFileSync("stateCRUPC", "closed");
-        console.log("write");
-      }
-      console.log("closed");
-      ctx.reply(dict['7'])
-    }
-  } 
-  else {
-    ctx.reply(dict['5']);
-  }
-})
-app.startPolling()

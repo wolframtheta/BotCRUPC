@@ -1,1 +1,1 @@
-index: echo '0' > counterHoli && echo 'closed' > stateCRUPC && node index.js
+index: node index.js && echo '0' > counterHoli && echo 'closed' > stateCRUPC && 
