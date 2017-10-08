@@ -8,18 +8,6 @@ var dict = lang.vortaro();
 
 const bot = new Telebot("457148721:AAH59U4s3FEVqiE_V43koSUSG0QEVZVp_HI");
 
-// bot.command('isopen', (ctx) => {
-//   var file = fs.readFileSync("stateCRUPC", 'utf-8');
-//   var isopen = (file == "open") ? true : false;
-//   if (isopen) ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADRgADZhkVBXvnbcBrbN7EAg');
-//   else ctx.telegram.sendSticker(ctx.message.chat.id, 'CAADBAADSAADZhkVBR-6hyRG6fjYAg');
-// });
-// bot.command('countholis', (ctx) => {
-//   var file = fs.readFileSync("counterHoli", 'utf-8');
-//   ctx.reply(file + dict['1']);
-// });
-// bot.hears(dict['2'], (ctx) => holis(ctx));
-// bot.hears(dict['3'], (ctx) => holis(ctx));
 bot.on('/start', (ctx) => {
   fs.writeFileSync("stateCRUPC", "closed");
   fs.writeFileSync("counterHoli", "0");
