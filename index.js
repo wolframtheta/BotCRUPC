@@ -26,7 +26,7 @@ bot.on('/eurobeat', (ctx) => {
   ctx.reply.text('https://www.youtube.com/watch?v=7u3jv7zC4kU&list=PLGdEbnOoiEOOaFFYKh3A66wOUlrHUwzTs');
 });
 bot.on('/kawaiipotato', (ctx) => {
-    bot.sendSticker(ctx.chat.id, 'CAADBAADggADMe7TAAGy3qtr1y8y3gI');
+    bot.sendSticker(ctx.chat.id, 'CAADBAADkAADm9tZAcSYdB1cDI0jAg');
 });
 
 bot.on(/(^h|^H)i$/, (ctx) => holis(ctx));
