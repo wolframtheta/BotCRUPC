@@ -3,7 +3,7 @@ var lang = require('./lang/lang-default'); // Change this to change the language
 var dict = lang.vortaro();
 
 
-const bot = new Telebot("457148721:AAH59U4s3FEVqiE_V43koSUSG0QEVZVp_HI");
+const bot = new Telebot(process.env.TOKEN);
 
 var map = new Object();
 bot.on('/start', (ctx) => {
