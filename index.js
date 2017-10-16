@@ -28,10 +28,10 @@ bot.on('/eurobeat', (ctx) => {
 bot.on('/slure', (ctx) => {
   ctx.reply.text('¯\\_(ツ)_/¯');
 });
-bot.on('/slure', (ctx) => {
+bot.on('/lemmy', (ctx) => {
   ctx.reply.text('( ͡° ͜ʖ ͡°)');
 });
-bot.on('/slure', (ctx) => {
+bot.on('/fliptable', (ctx) => {
   ctx.reply.text('(╯°□°）╯︵ ┻━┻');
 });
 bot.on('/repository', (ctx) => {
