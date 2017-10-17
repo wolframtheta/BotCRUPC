@@ -1,27 +1,32 @@
 var Telebot = require('telebot');
 var lang = require('./lang/lang-default'); // Change this to change the language
 var loadCommands = require('./loadCommands');
+var fs = require('fs');
 var dict = lang.vortaro();
 
+fs.writeFileSync("crupc.json", '{"stateCRUPC":"closed", "counterHolis":"0"}');
+const bot = new Telebot("457148721:AAH59U4s3FEVqiE_V43koSUSG0QEVZVp_HI");
 
-const bot = new Telebot(process.env.TOKEN);
+var file = fs.readFileSync("crupc.json");
+var obj = JSON.parse(file);
 
-var map = new Object();
 bot.on('/start', (ctx) => {
   if (ctx.from.username == 'XvaiKawaii') {
-    map = {"stateCRUPC":"closed", "counterHolis":"0"};
     ctx.reply.text("Holi crupcero!");
   } else {
       ctx.reply.text(dict['5']);
   }
 });
+
 bot.on('/isopen', (ctx) => {
-  var isopen = (map.stateCRUPC == "open") ? true : false;
+  var isopen = (obj.stateCRUPC == "open") ? true : false;
   if (isopen) bot.sendSticker(ctx.chat.id, 'CAADBAADRgADZhkVBXvnbcBrbN7EAg');
   else bot.sendSticker(ctx.chat.id, 'CAADBAADSAADZhkVBR-6hyRG6fjYAg');
 });
+
 bot.on('/countholis', (ctx) => {
-  ctx.reply.text(map.counterHolis + dict['1']);
+  ctx.reply.text(obj.counterHolis + dict['1']);
+  
 });
 
 loadCommands.loadUrls(bot);
@@ -34,18 +39,20 @@ bot.on(/(^h|^H)i$/, (ctx) => holis(ctx));
 bot.on('sticker', (ctx) => {
   if (ctx.chat.id < 0 || (ctx.chat.id > 0 && ctx.from.username == 'XvaiKawaii')) {
     if (ctx.sticker.emoji == '🚪' && ctx.sticker.set_name == "CRUPC") {
-      console.log("map:" + map.stateCRUPC);
-      if (map.stateCRUPC == "closed") {
-        map.stateCRUPC = "open";
+      console.log("map:" + obj.stateCRUPC);
+      if (obj.stateCRUPC == "closed") {
+        obj.stateCRUPC = "open";
         console.log("write");
+        fs.writeFileSync("crupc.json", JSON.stringify(obj));
       }
       console.log("open");
       ctx.reply.text(dict['6']);
     }
     else if (ctx.sticker.emoji == '😒' && ctx.sticker.set_name == "CRUPC") {
-      console.log("map:" + map.stateCRUPC);
-      if (map.stateCRUPC == "open") {
-        map.stateCRUPC = "closed";
+      console.log("map:" + obj.stateCRUPC);
+      if (obj.stateCRUPC == "open") {
+        obj.stateCRUPC = "closed";
+        fs.writeFileSync("crupc.json", JSON.stringify(obj));
         console.log("write");
       }
       console.log("closed");
@@ -56,10 +63,12 @@ bot.on('sticker', (ctx) => {
   ctx.reply.text(dict['5']);
   }
 });
+
 bot.start();
 
 function holis(ctx) {
-  map.counterHolis++;
+  obj.counterHolis++;
+  fs.writeFileSync("crupc.json", JSON.stringify(obj));
   ctx.reply.text(dict['4'])
 }
 
