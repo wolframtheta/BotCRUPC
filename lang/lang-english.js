@@ -8,8 +8,9 @@
 			'5': 'I do not do you a fucking affair',
 			'6': 'Open club',
 			'7': 'Closed club',
-            '8': 'There are no more tables to flip',
-            '9': 'No more tables can fit  in the club'
+			'8': 'There are no more tables to flip',
+			'9': 'No more tables can fit  in the club'
+			'10': 'Enjoy ma tune ma boi'
 		};
 	};
 })();

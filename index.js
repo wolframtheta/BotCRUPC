@@ -60,7 +60,22 @@ loadCommands.loadUrls(bot);
 loadCommands.loadLenny(bot, connection, dict);
 loadCommands.loadSticker(bot);
 
-bot.on(RegExp(/kawaii+/, "i"), (ctx) => kannaAtack(ctx));
+bot.on('/randomplaylist', (ctx) => {
+  ctx.reply.text('Enjoy ma tune ma boi');
+  var roulette = Math.random();
+  if ( 0 <= roulette < 0.1) ctx.reply.text('https://youtu.be/mobtxEJHhY4');
+  if ( 0.1 <= roulette < 0.2) ctx.reply.text('https://www.youtube.com/watch?v=XhQIXO0vUOM');
+  if ( 0.2 <= roulette < 0.3) ctx.reply.text('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+  if ( 0.3 <= roulette < 0.4) ctx.reply.text('https://youtu.be/L_jWHffIx5E?t=36s');
+  if ( 0.4 <= roulette < 0.5) ctx.reply.text('https://www.youtube.com/watch?v=n5rS9vNbCDg');
+  if ( 0.5 <= roulette < 0.6) ctx.reply.text('https://youtu.be/PfIB7h7rsOw');
+  if ( 0.6 <= roulette < 0.7) ctx.reply.text('https://www.youtube.com/watch?v=UbQgXeY_zi4');
+  if ( 0.7 <= roulette < 0.8) ctx.reply.text('https://www.youtube.com/watch?v=OBklXeUs6HU');
+  if ( 0.8 <= roulette < 0.9) ctx.reply.text('https://www.youtube.com/watch?v=5LitDGyxFh4');
+  if ( 0.9 <= roulette < 1) ctx.reply.text('https://www.youtube.com/watch?v=xy4evbxF40w');
+});
+
+bot.on(/kawaii+/, (ctx) => kannaAtack(ctx));
 
 bot.on(/^hi$/gi, (ctx) => holis(ctx));
 
