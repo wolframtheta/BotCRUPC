@@ -7,7 +7,8 @@
 			'4': 'Holiiiiiiiiiiiiiiii!!',
 			'5': 'A ti no te hago ni puto caso',
 			'6': 'Club abierto',
-			'7': 'Club cerrado'
+			'7': 'Club cerrado',
+			'8': 'Enjoy ma tune ma boi',
 		};
 	};
 })();
