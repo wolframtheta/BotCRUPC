@@ -7,7 +7,8 @@
 			'4': 'Helloooooooooo!!',
 			'5': 'I do not do you a fucking affair',
 			'6': 'Open club',
-			'7': 'Closed club'
+			'7': 'Closed club',
+			'8': 'Enjoy ma tune ma boi'
 		};
 	};
 })();
