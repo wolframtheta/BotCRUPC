@@ -4,7 +4,7 @@ var loadCommands = require('./loadCommands');
 var dict = lang.vortaro();
 
 
-const bot = new Telebot('475508772:AAFmjh62xPLAr0ddQQ8DxdBAIHn2uMHVABM');
+const bot = new Telebot(process.env.TOKEN);
 
 var map = new Object();
 bot.on('/start', (ctx) => {
