@@ -1,9 +1,10 @@
 var Telebot = require('telebot');
 var lang = require('./lang/lang-default'); // Change this to change the language
+var loadCommands = require('./loadCommands');
 var dict = lang.vortaro();
 
 
-const bot = new Telebot(process.env.TOKEN);
+const bot = new Telebot('475508772:AAFmjh62xPLAr0ddQQ8DxdBAIHn2uMHVABM');
 
 var map = new Object();
 bot.on('/start', (ctx) => {
@@ -22,25 +23,12 @@ bot.on('/isopen', (ctx) => {
 bot.on('/countholis', (ctx) => {
   ctx.reply.text(map.counterHolis + dict['1']);
 });
-bot.on('/eurobeat', (ctx) => {
-  ctx.reply.text('https://www.youtube.com/watch?v=6ftCIfHwqtg');
-});
-bot.on('/slure', (ctx) => {
-  ctx.reply.text('¯\\_(ツ)_/¯');
-});
-bot.on('/lemmy', (ctx) => {
-  ctx.reply.text('( ͡° ͜ʖ ͡°)');
-});
-bot.on('/fliptable', (ctx) => {
-  ctx.reply.text('(╯°□°）╯︵ ┻━┻');
-});
-bot.on('/repository', (ctx) => {
-  ctx.reply.text('https://github.com/wolframtheta/BotCRUPC');
-});
-bot.on('/kawaiipotato', (ctx) => {
-    bot.sendSticker(ctx.chat.id, 'CAADBAADkAADm9tZAcSYdB1cDI0jAg');
-});
-bot.on(/kawaii+/, (ctx) => kannaAtack(ctx));
+
+loadCommands.loadUrls(bot);
+loadCommands.loadLenny(bot);
+loadCommands.loadSticker(bot);
+
+bot.on(RegExp(/kawaii+/, "i"), (ctx) => kannaAtack(ctx));
 
 bot.on(/(^h|^H)i$/, (ctx) => holis(ctx));
 bot.on('sticker', (ctx) => {
