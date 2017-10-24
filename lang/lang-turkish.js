@@ -5,7 +5,7 @@
 			'2': 'Merhaba',
 			'3': 'merhaba',
 			'4': 'Merhabaaaaaaaa!!',
-			'5': 'I do not do you a fucking affair',
+			'5': 'Seninle hiç bir işim olmaz!',
 			'6': 'Açık kulüp',
 			'7': 'Kapalı kulüp'
 		};
