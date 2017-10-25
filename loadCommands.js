@@ -31,24 +31,33 @@ function loadSendSticker(map, bot){
 function loadSendText(map, bot, obj){
   map.forEach(function(e, k, m) {
     bot.on(k, (ctx) => {
+        console.log(obj.stopSpam + " " + k)
         if(!obj.stopSpam) {
-            if (k == '/puttable' && obj.tables < 3) {
-                ++obj.tables;
+            if (k == '/fliptable' || k == '/ragefliptable') {
+                if (obj.tables > 0) ctx.reply.text(e);
             }
-            else if (k == '/fliptable' || k == '/ragefliptable') {
-                --obj.taules;
-            }
-            else if (k == '/flitables') {
-                obj.taules -= 2;
-                if (obj.taules < 0) obj.taules = 0;
-            }
-            fs.writeFileSync('crupc.json', JSON.stringify(obj));
-            if (k == '/fliptable' || k == '/fliptables' || k == '/ragefliptable') {
-                if (obj.taules > 0) ctx.reply.text(e);
+            else if (k == '/fliptables') {
+                if (obj.tables > 1)ctx.reply.text(e);
             }
             else {
                 ctx.reply.text(e);
             }
+            console.log(obj.stopSpam);
+            if (k == '/puttable' && obj.tables < 3) {
+                ++obj.tables;
+                if (obj.tables < 0) obj.tables = 1;
+            }
+            else if (k == '/fliptable') {
+                if (obj.tables > 0) --obj.tables;
+            }
+            else if (k == '/ragefliptable') {
+                obj.tables = 0;
+            }
+            else if (k == '/fliptables') {
+                if (obj.tables > 1) obj.tables -= 2;
+            }
+            console.log("obj" + obj.tables);
+            fs.writeFileSync('crupc.json', JSON.stringify(obj));
         }
     });
   });

@@ -4,15 +4,16 @@ var loadCommands = require('./loadCommands');
 var fs = require('fs');
 var dict = lang.vortaro();
 
-fs.writeFileSync("crupc.json", '{"stateCRUPC":"closed", "counterHolis":"0","stopSpam":"false", "tables":"3"}');
-const bot = new Telebot("457148721:AAH59U4s3FEVqiE_V43koSUSG0QEVZVp_HI");
+fs.writeFileSync("crupc.json", '{"stateCRUPC":"closed", "counterHolis":"0","stopSpam":false, "tables":3}');
+const bot = new Telebot(process.env.TOKEN);
 
 var file = fs.readFileSync("crupc.json");
 var obj = JSON.parse(file);
 
 bot.on('/stopspam', (ctx) => {
     if (ctx.from.username == process.env.administrator) {
-        obj.stopSpam = 'true';
+        obj.stopSpam = true;
+        console.log('stop spam true');
         fs.writeFileSync('crupc.json', JSON.stringify(obj));
     } else {
         ctx.reply.text(dict['5']);
@@ -21,7 +22,8 @@ bot.on('/stopspam', (ctx) => {
 
 bot.on('/startspam', (ctx) => {
     if (ctx.from.username == process.env.administrator) {
-        obj.stopSpam = 'false';
+        obj.stopSpam = false;
+        console.log('stop spam false');
         fs.writeFileSync('crupc.json', JSON.stringify(obj));
     } else {
         ctx.reply.text(dict['5']);
@@ -47,7 +49,7 @@ bot.on(RegExp(/kawaii+/, "i"), (ctx) => kannaAtack(ctx));
 
 bot.on(/(^h|^H)i$/, (ctx) => holis(ctx));
 bot.on('sticker', (ctx) => {
-  if (ctx.chat.id < 0 || (ctx.chat.id > 0 && ctx.from.username == 'XvaiKawaii')) {
+  if (ctx.chat.id < 0 || (ctx.chat.id > 0 && ctx.from.username == process.env.administrator)) {
     if (ctx.sticker.emoji == '🚪' && ctx.sticker.set_name == "CRUPC") {
       console.log("map:" + obj.stateCRUPC);
       if (obj.stateCRUPC == "closed") {
