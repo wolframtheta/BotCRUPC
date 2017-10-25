@@ -1,4 +1,4 @@
-
+var fs = require('fs');
 var lenny = new Map ([
               ['/lenny'     , '( ͡° ͜ʖ ͡°)'],
               ['/shrug'     , '¯\\_(ツ)_/¯'],
@@ -21,19 +21,46 @@ var sticker = new Map ([
 function loadSendSticker(map, bot){
   map.forEach(function(e, k, m) {
     bot.on(k, (ctx) => {
-      bot.sendSticker(ctx.chat.id, e);
+        if (!obj.stopSpam) {
+            bot.sendSticker(ctx.chat.id, e);
+        }
     });
   });
 }
 
-function loadSendText(map, bot){
+function loadSendText(map, bot, obj){
   map.forEach(function(e, k, m) {
     bot.on(k, (ctx) => {
-      ctx.reply.text(e);
+        if(!obj.stopSpam) {
+            if (k == '/puttable' && obj.tables < 3) {
+                ++obj.tables;
+            }
+            else if (k == '/fliptable' || k == '/ragefliptable') {
+                --obj.taules;
+            }
+            else if (k == '/flitables') {
+                obj.taules -= 2;
+                if (obj.taules < 0) obj.taules = 0;
+            }
+            fs.writeFileSync('crupc.json', JSON.stringify(obj));
+            if (k == '/fliptable' || k == '/fliptables' || k == '/ragefliptable') {
+                if (obj.taules > 0) ctx.reply.text(e);
+            }
+            else {
+                ctx.reply.text(e);
+            }
+        }
     });
   });
 }
 
-var loadUrls    = module.exports.loadUrls =     function(bot){loadSendText(urls,bot);}
-var loadLenny   = module.exports.loadLenny =    function(bot){loadSendText(lenny,bot);}
+function loadSendUrl(map, bot) {
+    map.forEach(function(e, k, m) {
+        bot.on(k, (ctx) => {
+            ctx.reply.text(e);
+        });
+    });
+}
+var loadUrls    = module.exports.loadUrls =     function(bot){loadSendUrl(urls,bot);}
+var loadLenny   = module.exports.loadLenny =    function(bot, obj){loadSendText(lenny,bot, obj);}
 var loadSticker = module.exports.loadSticker =  function(bot){loadSendSticker(sticker,bot);}
