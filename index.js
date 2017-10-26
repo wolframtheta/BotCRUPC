@@ -10,9 +10,11 @@ const bot = new Telebot(process.env.TOKEN);
 var file = fs.readFileSync("crupc.json");
 var obj = JSON.parse(file);
 bot.on(/^\/lang (.+$)/, (ctx, props) => {
-    console.log(props.match[1]);
-    lang = require('./lang/lang-' + props.match[1]);
-    dict = lang.vortaro();
+    if (props.match[1] == "help") ctx.reply.text("default, english, polish, portuguese, russian, turkish");
+    else {
+        lang = require('./lang/lang-' + props.match[1]);
+        dict = lang.vortaro();
+    }
 });
 bot.on('/stopspam', (ctx) => {
     if (ctx.from.username == process.env.administrator) {
