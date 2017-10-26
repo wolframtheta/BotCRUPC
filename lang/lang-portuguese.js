@@ -7,7 +7,9 @@
 			'4': 'Oiiiiiiiiiiiiiiii!!',
 			'5': 'Não estou nem aí com você!',
 			'6': 'Clube aberto',
-			'7': 'Clube fechado'
+			'7': 'Clube fechado',
+            '8': 'Não há mais tabelas para virar',
+            '9': 'Mais tabelas podem caber no clube'
 		};
 	};
 })();

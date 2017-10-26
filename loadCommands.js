@@ -28,24 +28,31 @@ function loadSendSticker(map, bot){
   });
 }
 
-function loadSendText(map, bot, obj){
+function loadSendText(map, bot, obj, dict){
   map.forEach(function(e, k, m) {
     bot.on(k, (ctx) => {
         console.log(obj.stopSpam + " " + k)
         if(!obj.stopSpam) {
             if (k == '/fliptable' || k == '/ragefliptable') {
                 if (obj.tables > 0) ctx.reply.text(e);
+                else ctx.reply.text(dict['8']);
             }
             else if (k == '/fliptables') {
                 if (obj.tables > 1)ctx.reply.text(e);
+                else ctx.reply.text(dict['8']);
+            }
+            else if (k == '/puttable' && obj.tables == 3) {
+                ctx.reply.text(dict['9']);
             }
             else {
                 ctx.reply.text(e);
             }
             console.log(obj.stopSpam);
-            if (k == '/puttable' && obj.tables < 3) {
-                ++obj.tables;
-                if (obj.tables < 0) obj.tables = 1;
+            if (k == '/puttable') {
+                if (obj.tables < 3) {
+                    ++obj.tables;
+                    if (obj.tables < 0) obj.tables = 1;
+                }
             }
             else if (k == '/fliptable') {
                 if (obj.tables > 0) --obj.tables;
@@ -56,7 +63,6 @@ function loadSendText(map, bot, obj){
             else if (k == '/fliptables') {
                 if (obj.tables > 1) obj.tables -= 2;
             }
-            console.log("obj" + obj.tables);
             fs.writeFileSync('crupc.json', JSON.stringify(obj));
         }
     });
@@ -71,5 +77,5 @@ function loadSendUrl(map, bot) {
     });
 }
 var loadUrls    = module.exports.loadUrls =     function(bot){loadSendUrl(urls,bot);}
-var loadLenny   = module.exports.loadLenny =    function(bot, obj){loadSendText(lenny,bot, obj);}
+var loadLenny   = module.exports.loadLenny =    function(bot, obj, dict){loadSendText(lenny,bot, obj, dict);}
 var loadSticker = module.exports.loadSticker =  function(bot){loadSendSticker(sticker,bot);}

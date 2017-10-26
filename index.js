@@ -9,7 +9,11 @@ const bot = new Telebot(process.env.TOKEN);
 
 var file = fs.readFileSync("crupc.json");
 var obj = JSON.parse(file);
-
+bot.on(/^\/lang (.+$)/, (ctx, props) => {
+    console.log(props.match[1]);
+    lang = require('./lang/lang-' + props.match[1]);
+    dict = lang.vortaro();
+});
 bot.on('/stopspam', (ctx) => {
     if (ctx.from.username == process.env.administrator) {
         obj.stopSpam = true;
@@ -42,7 +46,7 @@ bot.on('/countholis', (ctx) => {
 });
 
 loadCommands.loadUrls(bot);
-loadCommands.loadLenny(bot, obj);
+loadCommands.loadLenny(bot, obj, dict);
 loadCommands.loadSticker(bot);
 
 bot.on(RegExp(/kawaii+/, "i"), (ctx) => kannaAtack(ctx));
