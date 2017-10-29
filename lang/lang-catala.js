@@ -10,9 +10,8 @@
 			'5': 'A tu no et faig ni puto cas',
 			'6': 'Club obert',
 			'7': 'Club tancat',
-            '8': 'No queden mes taules per tirar',
-            '9': 'No caben mes taules al despatx',
-			'10': 'Enjoy ma tune ma boi'
+            		'8': 'No queden mes taules per tirar',
+            		'9': 'No caben mes taules al despatx'
 		};
 	};
 })();
