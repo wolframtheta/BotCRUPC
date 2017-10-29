@@ -10,9 +10,8 @@
 			'5': 'Áva quetë',
 			'6': 'Ampano palime',
 			'7': 'Ampano cumna',
-            '8': 'Lala tare pálala',
-            '9': 'Lala tare ilmen',
-			'10': 'Enjoy ma tune ma boi'
+            		'8': 'Lala tare pálala',
+            		'9': 'Lala tare ilmen'
 		};
 	};
 })();
