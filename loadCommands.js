@@ -21,50 +21,65 @@ var sticker = new Map ([
 function loadSendSticker(map, bot){
   map.forEach(function(e, k, m) {
     bot.on(k, (ctx) => {
-        if (!obj.stopSpam) {
-            bot.sendSticker(ctx.chat.id, e);
-        }
+        connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'stopSpam'", function(err, res) {
+          if (err) throw err;
+          if (!res[0]._Value) {
+              bot.sendSticker(ctx.chat.id, e);
+          }
+        });
     });
   });
 }
 
-function loadSendText(map, bot, obj, dict){
+function loadSendText(map, bot, connection, dict){
   map.forEach(function(e, k, m) {
     bot.on(k, (ctx) => {
-        console.log(obj.stopSpam + " " + k)
-        if(!obj.stopSpam) {
-            if (k == '/fliptable' || k == '/ragefliptable') {
-                if (obj.tables > 0) ctx.reply.text(e);
-                else ctx.reply.text(dict['8']);
-            }
-            else if (k == '/fliptables') {
-                if (obj.tables > 1)ctx.reply.text(e);
-                else ctx.reply.text(dict['8']);
-            }
-            else if (k == '/puttable' && obj.tables == 3) {
-                ctx.reply.text(dict['9']);
-            }
-            else {
-                ctx.reply.text(e);
-            }
-            console.log(obj.stopSpam);
-            if (k == '/puttable') {
-                if (obj.tables < 3) {
-                    ++obj.tables;
-                    if (obj.tables < 0) obj.tables = 1;
+        connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'stopSpam'", function(err, res) {
+          if (err) throw err;
+          var stop = res[0]._Value;
+          
+          console.log(stop + " " + k);
+          connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'tables'", function(err, res) {
+            if (err) throw err;
+            var table = res[0]._Value;
+            if(!stop) {
+                if (k == '/fliptable' || k == '/ragefliptable') {
+                    if (table > 0) ctx.reply.text(e);
+                    else ctx.reply.text(dict['8']);
                 }
+                else if (k == '/fliptables') {
+                    if (table > 1)ctx.reply.text(e);
+                    else ctx.reply.text(dict['8']);
+                }
+                else if (k == '/puttable' && table == 3) {
+                    ctx.reply.text(dict['9']);
+                }
+                else {
+                    ctx.reply.text(e);
+                }
+                console.log(stop);
+                if (k == '/puttable') {
+                    if (table < 3) {
+                        ++table;
+                        if (table < 0) table = 1;
+                    }
+                }
+                else if (k == '/fliptable') {
+                    if (table > 0) --table;
+                }
+                else if (k == '/ragefliptable') {
+                    table = 0;
+                }
+                else if (k == '/fliptables') {
+                    if (table > 1) table -= 2;
+                }
+
+                connection.query("UPDATE map_crupc SET _Value = '" + table + "' WHERE _Key = 'tables'", function(err) {
+                  if (err) throw err;
+                });
             }
-            else if (k == '/fliptable') {
-                if (obj.tables > 0) --obj.tables;
-            }
-            else if (k == '/ragefliptable') {
-                obj.tables = 0;
-            }
-            else if (k == '/fliptables') {
-                if (obj.tables > 1) obj.tables -= 2;
-            }
-            fs.writeFileSync('crupc.json', JSON.stringify(obj));
-        }
+          });
+        });
     });
   });
 }
@@ -77,5 +92,5 @@ function loadSendUrl(map, bot) {
     });
 }
 var loadUrls    = module.exports.loadUrls =     function(bot){loadSendUrl(urls,bot);}
-var loadLenny   = module.exports.loadLenny =    function(bot, obj, dict){loadSendText(lenny,bot, obj, dict);}
+var loadLenny   = module.exports.loadLenny =    function(bot, connection, dict){loadSendText(lenny,bot, connection, dict);}
 var loadSticker = module.exports.loadSticker =  function(bot){loadSendSticker(sticker,bot);}
