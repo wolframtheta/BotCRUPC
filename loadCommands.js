@@ -23,7 +23,7 @@ function loadSendSticker(map, bot){
     bot.on(k, (ctx) => {
         connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'stopSpam'", function(err, res) {
           if (err) throw err;
-          if (!res[0]._Value) {
+          if (res[0]._Values == 'false') {
               bot.sendSticker(ctx.chat.id, e);
           }
         });
@@ -42,7 +42,7 @@ function loadSendText(map, bot, connection, dict){
           connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'tables'", function(err, res) {
             if (err) throw err;
             var table = res[0]._Value;
-            if(!stop) {
+            if(stop == 'false') {
                 if (k == '/fliptable' || k == '/ragefliptable') {
                     if (table > 0) ctx.reply.text(e);
                     else ctx.reply.text(dict['8']);
