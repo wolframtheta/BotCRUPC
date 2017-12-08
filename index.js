@@ -7,6 +7,10 @@ var mysql = require('mysql');
 var connection = mysql.createConnection(process.env.JAWSDB_MARIA_URL);
 
 connection.connect();
+var TelegramBot = require('node-telegram-bot-api');
+var bot = new TelegramBot(process.env.TOKEN, {
+  polling: true
+});
 
 const bot = new Telebot(process.env.TOKEN);
 
