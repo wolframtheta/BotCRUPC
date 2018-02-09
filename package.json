@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/wolframtheta/BotCRUPC#readme",
   "dependencies": {
+    "botfather": "^3.8.0",
     "mysql": "^2.15.0",
     "node-telegram-bot-api": "^0.29.0",
     "telebot": "^1.2.3"
