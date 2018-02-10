@@ -404,8 +404,7 @@ bot.on('callbackQuery', msg => {
     else if (msg.data == 'cancelAction') {
         step = "";
         bot.sendMessage(chatId, '¿Que partidas quieres ver?', {replyMarkup: kMenuGeneral});
-        return bot.answerCallbackQuery(chatId, 'Accion cancelada', true);
-        
+        bot.answerCallbackQuery(chatId, 'Accion cancelada', true);
     }
 });
 
