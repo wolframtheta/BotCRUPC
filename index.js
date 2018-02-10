@@ -403,8 +403,8 @@ bot.on('callbackQuery', msg => {
     }
     else if (msg.data == 'cancelAction') {
         step = "";
+        bot.sendMessage(chatId, 'Accion cancelada', true);
         bot.sendMessage(chatId, '¿Que partidas quieres ver?', {replyMarkup: kMenuGeneral});
-        bot.answerCallbackQuery(chatId, 'Accion cancelada', true);
     }
 });
 
