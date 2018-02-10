@@ -181,6 +181,12 @@ var kCreateStates = bot.inlineKeyboard([
         ]
     ]);
 
+var kCancel = bot.inlineKeyboard([
+        [
+            bot.inlineButton('Cancelar accion', {callback: 'cancelAction'})
+        ]
+    ]);
+
 var kEditPartida;
 var kId;
 var kActive;
@@ -263,7 +269,7 @@ bot.on('callbackQuery', msg => {
     } 
     else if (msg.data == 'addPartida') {
         step = 1;
-        bot.sendMessage(msg.message.chat.id, 'OK. Enviame el nombre de la partida');
+        bot.sendMessage(msg.message.chat.id, 'OK. Enviame el nombre de la partida', {replyMarkup: kCancel});
         partida = new Object();
     } 
     else if ((id = /^editPartida_\d+/.exec(msg.data))) {
@@ -294,7 +300,7 @@ bot.on('callbackQuery', msg => {
         bot.sendMessage(chatId, 'Seguro que quieres eliminar esta partida?', {replyMarkup: kDeleteAccept});    
     } 
     else if (msg.data == 'menuGeneral') {
-        bot.editMessageText({chatId, messageId}, '¿Que quieres hacer?', {replyMarkup: kMenuGeneral});
+        bot.editMessageText({chatId, messageId}, '¿Que partidas quieres ver?', {replyMarkup: kMenuGeneral});
     } 
     else if (msg.data == 'acceptPartida') {
         var q = "INSERT INTO partidas VALUES ('', '" + partida.Name + "', '" 
@@ -325,44 +331,44 @@ bot.on('callbackQuery', msg => {
         });
         bot.editMessageText({chatId, messageId}, '¿Que partidas quieres ver?', {parseMode: 'html', replyMarkup: kMenuGeneral});
     }
-    else if (msg.data == 'editName') {
+    else if (msg.data == 'editName' && step != "") {
         step = 'editName';
-        bot.editMessageText({chatId, messageId}, 'Nombre actual de la partida: <b>' + actualPartida.Name + "</b>\nEnviame el nuevo nombre de la partida.", {parseMode: 'html'});
+        bot.editMessageText({chatId, messageId}, 'Nombre actual de la partida: <b>' + actualPartida.Name + "</b>\nEnviame el nuevo nombre de la partida.", {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editMaster') {
+    else if (msg.data == 'editMaster' && step != "") {
         step = 'editMaster';
-        bot.editMessageText({chatId, messageId}, 'Master actual de la partida: <b>' + actualPartida.Master + "</b>\nEnviame el nuevo master de la partida.", {parseMode: 'html'});
+        bot.editMessageText({chatId, messageId}, 'Master actual de la partida: <b>' + actualPartida.Master + "</b>\nEnviame el nuevo master de la partida.", {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editMail') {
+    else if (msg.data == 'editMail' && step != "") {
         step = 'editMail';
-        bot.editMessageText({chatId, messageId}, 'Mail actual de la partida: <b>' + actualPartida.Mail_Master + "</b>\nEnviame el nuevo mail de la partida.", {parseMode: 'html'});
+        bot.editMessageText({chatId, messageId}, 'Mail actual de la partida: <b>' + actualPartida.Mail_Master + "</b>\nEnviame el nuevo mail de la partida.", {parseMode: 'html', replyMarkup: kCancel, replyMarkup: kCancel});
     }
-    else if (msg.data == 'editSystem') {
+    else if (msg.data == 'editSystem' && step != "") {
         step = 'editSystem';
         bot.editMessageText({chatId, messageId}, 'Sistema actual de la partida: <b>' + actualPartida.System + "</b>\nEnviame el nuevo sistema de la partida.", {parseMode: 'html'});
     }
-    else if (msg.data == 'editDay') {
+    else if (msg.data == 'editDay' && step != "") {
         step = 'editDay';
-        bot.editMessageText({chatId, messageId}, 'Dia actual de la partida: <b>' + actualPartida.Day + "</b>\nEnviame el nuevo dia de la partida.", {parseMode: 'html'});
+        bot.editMessageText({chatId, messageId}, 'Dia actual de la partida: <b>' + actualPartida.Day + "</b>\nEnviame el nuevo dia de la partida.", {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editHour') {
+    else if (msg.data == 'editHour' && step != "") {
         step = 'editHour';
-        bot.editMessageText({chatId, messageId}, 'Hora actual de la partida: <b>' + actualPartida.Hour_from + '-' + actualPartida.Hour_to + "</b>\nEnviame la nueva hora de la partida.", {parseMode: 'html'});
+        bot.editMessageText({chatId, messageId}, 'Hora actual de la partida: <b>' + actualPartida.Hour_from + '-' + actualPartida.Hour_to + "</b>\nEnviame la nueva hora de la partida.", {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editPjs') {
+    else if (msg.data == 'editPjs' && step != "") {
         step = 'editPjs';
         var a = 'Pjs actuales de la partida:\n';
         for (var i = 0; i < actualPartida.Pjs.length; i++) {
             a += '▫️' + actualPartida.Pjs[i].NamePj + ' - ' + actualPartida.Pjs[i].RolePj + ' (' + actualPartida.Pjs[i].NamePlayer + ')' + "\n";
         }
         a += '\nEnviame los nuevos pjs de la partida.\n<i>Ejemplo: Miguel Angel Munoz/Kanna/MTG Kawaii Player</i>';
-        bot.editMessageText({chatId, messageId}, a, {parseMode: 'html'});
+        bot.editMessageText({chatId, messageId}, a, {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editState') {
+    else if (msg.data == 'editState' && step != "") {
         step = 'editState';
         bot.editMessageText({chatId, messageId}, 'Estado actual de la partida: <b>' + actualPartida.State + "</b>\nEn que estado se encuentra ahora?", {parseMode: 'html', replyMarkup: kEditStates});
     }
-    else if (/^editState/g.exec(msg.data) != null) {
+    else if (/^editState/g.exec(msg.data) != null && step != "") {
         var st = msg.data.split('editState')[1];
         console.log("st " + st);
         connection.query("UPDATE partidas SET State = \"" + stateToInt(st) + "\" WHERE ID = '" + actualPartida.ID + "'", function(err, res) {
@@ -377,7 +383,7 @@ bot.on('callbackQuery', msg => {
         });
         step = "";
     }
-    else if (/^createState/g.exec(msg.data) != null) {
+    else if (/^createState/g.exec(msg.data) != null && step != "") {
         var st = msg.data.split('createState')[1];
         step = "";
         partida.State = st;
@@ -394,6 +400,12 @@ bot.on('callbackQuery', msg => {
         }
         text += '</pre>';
         bot.sendMessage(chatId, text, {parseMode: 'html', replyMarkup: kAddAccept})
+    }
+    else if (msg.data == 'cancelAction') {
+        step = "";
+        bot.sendMessage(chatId, '¿Que partidas quieres ver?', {replyMarkup: kMenuGeneral});
+        return bot.answerCallbackQuery(chatId, 'Accion cancelada', true);
+        
     }
 });
 
@@ -466,34 +478,34 @@ bot.on('text', msg => {
     if (step == 1) {
         step = 2;
         partida.Name = msg.text;
-        bot.sendMessage(msg.chat.id, 'OK. Enviame el nombre del Master');
+        bot.sendMessage(msg.chat.id, 'OK. Enviame el nombre del Master', {replyMarkup: kCancel});
     }
     else if (step == 2) {
         step = 3;
         partida.Master = msg.text;
-        bot.sendMessage(msg.chat.id, 'OK. Enviame una forma de contacto con el Master');
+        bot.sendMessage(msg.chat.id, 'OK. Enviame una forma de contacto con el Master', {replyMarkup: kCancel});
     }
     else if (step == 3) {
         step = 4;
         partida.Mail = msg.text;
-        bot.sendMessage(msg.chat.id, 'OK. Enviame el sistema de juego');
+        bot.sendMessage(msg.chat.id, 'OK. Enviame el sistema de juego', {replyMarkup: kCancel});
     }
     else if (step == 4) {
         step = 5;
         partida.System = msg.text;
-        bot.sendMessage(msg.chat.id, 'OK. Enviame que dia se va a jugar');
+        bot.sendMessage(msg.chat.id, 'OK. Enviame que dia se va a jugar', {replyMarkup: kCancel});
     }
     else if (step == 5) {
         step = 6;
         partida.Day = msg.text;
-        bot.sendMessage(msg.chat.id, 'OK. Enviame en que horario se va a jugar (Formato: <i>hora_inicio - hora_final</i>)', {parseMode: 'HTML'});
+        bot.sendMessage(msg.chat.id, 'OK. Enviame en que horario se va a jugar (Formato: <i>hora_inicio - hora_final</i>)', {parseMode: 'HTML', replyMarkup: kCancel});
     }
     else if (step == 6) {
         step = 7;
         var h = msg.text.split('-');
         partida.Hour_from = h[0];
         partida.Hour_to = h[1];
-        bot.sendMessage(msg.chat.id, 'OK. Enviame una lista de todos los jugadores con sus respetivos personajes y que clase son separado por `/` y con salto de linia al final de cada personaje .\n<i>Ejemplo: Miguel Angel Munoz/Kanna/Kawaii</i>', {parseMode:'HTML'}); 
+        bot.sendMessage(msg.chat.id, 'OK. Enviame una lista de todos los jugadores con sus respetivos personajes y que clase son separado por `/` y con salto de linia al final de cada personaje .\n<i>Ejemplo: Miguel Angel Munoz/Kanna/Kawaii</i>', {parseMode:'HTML', replyMarkup: kCancel}); 
 
     }
     else if (step == 7) {
