@@ -210,6 +210,7 @@ bot.on('/partidas', msg => {
 bot.on('callbackQuery', msg => {
     chatId = msg.message.chat.id;
     messageId = msg.message.message_id;
+    console.log(msg.data + ' ' + step);
     if ((id = /^idA_\d+/.exec(msg.data))) {
         id = id.input.split('_')[1];
         idGame = id;
@@ -228,43 +229,52 @@ bot.on('callbackQuery', msg => {
     else if (msg.data == 'showActivePartidas') {
         connection.query("SELECT * FROM partidas WHERE State = '1'", function(err, res) {
             if (err) throw err;
-            var keyboard = [];
-            var count = res[0]._Value;
+            if (res.length == 0) bot.editMessageText({chatId, messageId}, 'No hay ninguna partida activa', {replyMarkup: kMenuGeneral});
+            else {
+                var keyboard = [];
+                var count = res[0]._Value;
 
-            for (var i = 0; i < res.length; i++) {
-                keyboard.push([{'text': res[i].Name + ' - ' + res[i].Master, 'callback_data': 'idA_' + res[i].ID}]);
+                for (var i = 0; i < res.length; i++) {
+                    keyboard.push([{'text': res[i].Name + ' - ' + res[i].Master, 'callback_data': 'idA_' + res[i].ID}]);
+                }
+                keyboard.push([{'text': '<< Atras', 'callback_data': 'menuGeneral'}]);
+                kActive = bot.inlineKeyboard(keyboard);
+                bot.editMessageText({chatId, messageId}, '¿Que partida activa quieres ver?', {replyMarkup: kActive});
             }
-            keyboard.push([{'text': '<< Atras', 'callback_data': 'menuGeneral'}]);
-            kActive = bot.inlineKeyboard(keyboard);
-            bot.editMessageText({chatId, messageId}, '¿Que partida activa quieres ver?', {replyMarkup: kActive});
         });   
     } 
     else if (msg.data == 'showProjectPartidas') {
         connection.query("SELECT * FROM partidas WHERE State = '2'", function(err, res) {
             if (err) throw err;
-            var keyboard = [];
-            var count = res[0]._Value;
+            if (res.length == 0) bot.editMessageText({chatId, messageId}, 'No hay ninguna partida en proyecto', {replyMarkup: kMenuGeneral});
+            else {
+                var keyboard = [];
+                var count = res[0]._Value;
 
-            for (var i = 0; i < res.length; i++) {
-                keyboard.push([{'text': res[i].Name + ' - ' + res[i].Master, 'callback_data': 'idP_' + res[i].ID}]);
+                for (var i = 0; i < res.length; i++) {
+                    keyboard.push([{'text': res[i].Name + ' - ' + res[i].Master, 'callback_data': 'idP_' + res[i].ID}]);
+                }
+                keyboard.push([{'text': '<< Atras', 'callback_data': 'menuGeneral'}]);
+                kProject = bot.inlineKeyboard(keyboard);
+                bot.editMessageText({chatId, messageId}, '¿Que partida en proyecto quieres ver?', {replyMarkup: kProject});
             }
-            keyboard.push([{'text': '<< Atras', 'callback_data': 'menuGeneral'}]);
-            kProject = bot.inlineKeyboard(keyboard);
-            bot.editMessageText({chatId, messageId}, '¿Que partida en proyecto quieres ver?', {replyMarkup: kProject});
         }); 
     } 
     else if (msg.data == 'showFinishedPartidas') {
         connection.query("SELECT * FROM partidas WHERE State = '0'", function(err, res) {
             if (err) throw err;
-            var keyboard = [];
-            var count = res[0]._Value;
+            if (res.length == 0) bot.editMessageText({chatId, messageId}, 'No hay ninguna partida finalizada', {replyMarkup: kMenuGeneral});
+            else {
+                var keyboard = [];
+                var count = res[0]._Value;
 
-            for (var i = 0; i < res.length; i++) {
-                keyboard.push([{'text': res[i].Name + ' - ' + res[i].Master, 'callback_data': 'idF_' + res[i].ID}]);
+                for (var i = 0; i < res.length; i++) {
+                    keyboard.push([{'text': res[i].Name + ' - ' + res[i].Master, 'callback_data': 'idF_' + res[i].ID}]);
+                }
+                keyboard.push([{'text': '<< Atras', 'callback_data': 'menuGeneral'}]);
+                kFinished = bot.inlineKeyboard(keyboard);
+                bot.editMessageText({chatId, messageId}, '¿Que partida finalizada quieres ver?', {replyMarkup: kFinished});
             }
-            keyboard.push([{'text': '<< Atras', 'callback_data': 'menuGeneral'}]);
-            kFinished = bot.inlineKeyboard(keyboard);
-            bot.editMessageText({chatId, messageId}, '¿Que partida finalizada quieres ver?', {replyMarkup: kFinished});
         }); 
     } 
     else if (msg.data == 'addPartida') {
@@ -331,31 +341,31 @@ bot.on('callbackQuery', msg => {
         });
         bot.editMessageText({chatId, messageId}, '¿Que partidas quieres ver?', {parseMode: 'html', replyMarkup: kMenuGeneral});
     }
-    else if (msg.data == 'editName' && step != "") {
+    else if (msg.data == 'editName') {
         step = 'editName';
         bot.editMessageText({chatId, messageId}, 'Nombre actual de la partida: <b>' + actualPartida.Name + "</b>\nEnviame el nuevo nombre de la partida.", {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editMaster' && step != "") {
+    else if (msg.data == 'editMaster') {
         step = 'editMaster';
         bot.editMessageText({chatId, messageId}, 'Master actual de la partida: <b>' + actualPartida.Master + "</b>\nEnviame el nuevo master de la partida.", {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editMail' && step != "") {
+    else if (msg.data == 'editMail') {
         step = 'editMail';
         bot.editMessageText({chatId, messageId}, 'Mail actual de la partida: <b>' + actualPartida.Mail_Master + "</b>\nEnviame el nuevo mail de la partida.", {parseMode: 'html', replyMarkup: kCancel, replyMarkup: kCancel});
     }
-    else if (msg.data == 'editSystem' && step != "") {
+    else if (msg.data == 'editSystem') {
         step = 'editSystem';
         bot.editMessageText({chatId, messageId}, 'Sistema actual de la partida: <b>' + actualPartida.System + "</b>\nEnviame el nuevo sistema de la partida.", {parseMode: 'html'});
     }
-    else if (msg.data == 'editDay' && step != "") {
+    else if (msg.data == 'editDay') {
         step = 'editDay';
         bot.editMessageText({chatId, messageId}, 'Dia actual de la partida: <b>' + actualPartida.Day + "</b>\nEnviame el nuevo dia de la partida.", {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editHour' && step != "") {
+    else if (msg.data == 'editHour') {
         step = 'editHour';
         bot.editMessageText({chatId, messageId}, 'Hora actual de la partida: <b>' + actualPartida.Hour_from + '-' + actualPartida.Hour_to + "</b>\nEnviame la nueva hora de la partida.", {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editPjs' && step != "") {
+    else if (msg.data == 'editPjs') {
         step = 'editPjs';
         var a = 'Pjs actuales de la partida:\n';
         for (var i = 0; i < actualPartida.Pjs.length; i++) {
@@ -364,7 +374,7 @@ bot.on('callbackQuery', msg => {
         a += '\nEnviame los nuevos pjs de la partida.\n<i>Ejemplo: Miguel Angel Munoz/Kanna/MTG Kawaii Player</i>';
         bot.editMessageText({chatId, messageId}, a, {parseMode: 'html', replyMarkup: kCancel});
     }
-    else if (msg.data == 'editState' && step != "") {
+    else if (msg.data == 'editState') {
         step = 'editState';
         bot.editMessageText({chatId, messageId}, 'Estado actual de la partida: <b>' + actualPartida.State + "</b>\nEn que estado se encuentra ahora?", {parseMode: 'html', replyMarkup: kEditStates});
     }
@@ -383,7 +393,7 @@ bot.on('callbackQuery', msg => {
         });
         step = "";
     }
-    else if (/^createState/g.exec(msg.data) != null && step != "") {
+    else if (/^createState/g.exec(msg.data) != null) {
         var st = msg.data.split('createState')[1];
         step = "";
         partida.State = st;
