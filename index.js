@@ -138,7 +138,7 @@ function kannaAtack(ctx){
 
     });
 }
-
+/*
 //Keyboards
 var kMenuGeneral = bot.inlineKeyboard([
         [
@@ -629,7 +629,7 @@ bot.on('text', msg => {
         
         step = "";
     }
-});
+});*/
 
 bot.on('/changelog', msg => {
     connection.query("SELECT * FROM changelog ORDER BY date DESC LIMIT 1", function(err, res) {
