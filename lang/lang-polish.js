@@ -7,7 +7,9 @@
 			'4': 'Siemankooooooooooooo!!',
 			'5': 'Nie zwracam na Ciebie pieprzonej uwagi',
 			'6': 'Klub otwarty',
-			'7': 'Klub zamknięty'
+			'7': 'Klub zamknięty',
+            '8': 'Nie ma więcej stolików',
+            '9': 'W klubie nie ma więcej stołów'
 		};
 	};
 })();
