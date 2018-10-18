@@ -1,5 +1,4 @@
-﻿
-(function() {
+﻿(function() {
 	module.exports.vortaro = function() {
 		return {
 			'0': 'quenya',
@@ -10,8 +9,8 @@
 			'5': 'Áva quetë',
 			'6': 'Ampano palime',
 			'7': 'Ampano cumna',
-            		'8': 'Lala tare pálala',
-            		'9': 'Lala tare ilmen'
+    		'8': 'Lala tare pálala',
+    		'9': 'Lala tare ilmen'
 		};
 	};
 })();
