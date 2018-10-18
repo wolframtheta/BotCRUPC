@@ -1,6 +1,7 @@
 ﻿(function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'english',
 			'1': 'It\'s time we said hellooooooooo! Sick...',
 			'2': 'Hi',
 			'3': 'hi',

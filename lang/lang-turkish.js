@@ -1,6 +1,7 @@
 ﻿(function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'turkish',
 			'1': 'Zamani geldi ve biz Merhabaaaaaa dedik! Hasta...',
 			'2': 'Merhaba',
 			'3': 'merhaba',

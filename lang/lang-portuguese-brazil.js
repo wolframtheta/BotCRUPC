@@ -1,6 +1,7 @@
 (function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'portuguese-brazil',
 			'1': 'É tempo dizemos oláaaaaaaaaaaaaa! ',
 			'2': 'Oi',
 			'3': 'oi',

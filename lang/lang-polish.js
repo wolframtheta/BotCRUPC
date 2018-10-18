@@ -1,6 +1,7 @@
 (function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'polish',
 			'1': ' razy powiedzieliśmy Siemankooooooooooooo!! Chory pojeb...',
 			'2': 'Cześć',
 			'3': 'cześć',

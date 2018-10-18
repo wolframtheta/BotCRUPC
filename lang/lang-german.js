@@ -1,6 +1,7 @@
 ﻿(function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'german',
 			'1': 'Es ist Zeit Hallo zu sagen! Moin!',
 			'2': 'Moin',
 			'3': 'Grüß Gott',

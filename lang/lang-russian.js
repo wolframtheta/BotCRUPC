@@ -1,6 +1,7 @@
 ﻿(function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'russian',
 			'1': 'Время пришла и мы сказали Приветтттттт!.',
 			'2': 'Привет',
 			'3': 'привет',

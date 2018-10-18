@@ -1,6 +1,7 @@
 (function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'portuguese',
 			'1': ' vezes que dissemos Oiiiiiiiiiiiiiiii! Idiotas...',
 			'2': 'Oi',
 			'3': 'oi',

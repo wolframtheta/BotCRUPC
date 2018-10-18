@@ -1,6 +1,7 @@
 ﻿(function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'default',
 			'1': ' veces hemos dicho Holiiiiiiiiiiiiiiii! Putos enfermos...',
 			'2': 'Hi',
 			'3': 'hi',

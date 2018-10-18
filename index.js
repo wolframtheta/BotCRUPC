@@ -11,13 +11,16 @@ connection.connect();
 const bot = new Telebot(process.env.TOKEN);
 
 bot.on(/^\/lang (.+$)/, (ctx, props) => {
-    if (props.match[1] == "help") ctx.reply.text("default, english, polish, portuguese, russian, turkish");
+    if (props.match[1] == "help") ctx.reply.text("catala, default, english, german, klingon, polish, portuguese-brazil, portuguese, quenya, russian, turkish");
     else {
         lang = require('./lang/lang-' + props.match[1]);
         dict = lang.vortaro();
     }
 });
 
+bot.on('/showlang', (ctx) => {
+    ctx.reply.text(dict['0'])
+});
 bot.on('/stopspam', (ctx) => {
     if (ctx.from.username == process.env.administrator) {
         console.log('stop spam true');
@@ -60,7 +63,15 @@ loadCommands.loadUrls(bot);
 loadCommands.loadLenny(bot, connection, dict);
 loadCommands.loadSticker(bot);
 
-bot.on(RegExp(/kawaii+/, "i"), (ctx) => kannaAtack(ctx));
+bot.on(RegExp(/kawaii+/, "i"), (ctx) => {
+    connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'stopSpam'", function(err, res) {
+        if (err) throw err;
+        stop = res[0]._Value;
+        if (stop == 'false') {
+            kannaAtack(ctx);
+        }
+    });
+});
 
 bot.on(/^hi$/gi, (ctx) => holis(ctx));
 
@@ -113,13 +124,8 @@ function holis(ctx) {
     ctx.reply.text(dict['4'])
 }
 
-function kannaAtack(ctx){
-    var stop;
-    connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'stopSpam'", function(err, res) {
-      if (err) throw err;
-      stop = res[0]._Value;
-      if (!stop) {
-        var kannaStickers = ["CAADBQADVAEAAhHsTwg9N6p2qMTE3wI","CAADBQADVQEAAhHsTwgIQ0YyGdeH9QI","CAADBQADWAEAAhHsTwj9HGLnMngW1QI",
+function kannaAtack(ctx) {
+   var kannaStickers = ["CAADBQADVAEAAhHsTwg9N6p2qMTE3wI","CAADBQADVQEAAhHsTwgIQ0YyGdeH9QI","CAADBQADWAEAAhHsTwj9HGLnMngW1QI",
                              "CAADBQADVwEAAhHsTwicB3U_qK86oAI","CAADBQADVgEAAhHsTwhs3Z6OMn1UawI","CAADBQADUwEAAhHsTwhB0-MIi9feVAI",
                              "CAADBQADUgEAAhHsTwg5I4hPQelh4gI","CAADBQADUQEAAhHsTwg5RdDBLjoHdQI","CAADBQADTgEAAhHsTwhpePGVn-6t9QI",
                              "CAADBQADTwEAAhHsTwh70Gb8FU0DsgI","CAADBQADTQEAAhHsTwjahOlLCxcjIAI","CAADBQADUAEAAhHsTwj4FpK-IIMZ8QI",
@@ -132,11 +138,8 @@ function kannaAtack(ctx){
                              "CAADBQADPQEAAhHsTwgtSje5XWFTaQI","CAADBQADPgEAAhHsTwiu4CgORjWQaQI","CAADBQADPwEAAhHsTwiK56bndPAnZwI",
                              "CAADBQADQQEAAhHsTwhr-9Ep0-ZvwQI","CAADBQADQAEAAhHsTwhZdn81emDM1AI","CAADBQADNAEAAhHsTwiCsq4UgEk05QI",
                              "CAADBQADMwEAAhHsTwgOGL07V0CZlAI","CAADBQADMgEAAhHsTwicRdiV65zXvQI","CAADBQADMQEAAhHsTwjyk_Fn-P_GKgI"];
-        var rand = Math.floor(Math.random() * kannaStickers.length) + 1;
-        bot.sendSticker(ctx.chat.id, kannaStickers[rand]).catch(function(){});
-      }
-
-    });
+    var rand = Math.floor(Math.random() * kannaStickers.length) + 1;
+    bot.sendSticker(ctx.chat.id, kannaStickers[rand]);
 }
 /*
 //Keyboards
