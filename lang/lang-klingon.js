@@ -1,6 +1,7 @@
 ﻿(function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'klingon',
 			'1': ' poH qavan maqarmeH! petaQ...',
 			'2': 'bIpIv\'a\'',
 			'3': 'bIpIv\'a\'',
@@ -9,7 +10,8 @@
 			'6': 'jeqqIj poS',
 			'7': 'jeqqIj SoQ',
             '8': 'pagh raS tu\'lu\'',
-            '9': 'raSDaq logh pagh tu\'lu\''
+            '9': 'raSDaq logh pagh tu\'lu\'',
+			'10': 'Enjoy ma tune ma boi'
 		};
 	};
 })();
