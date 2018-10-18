@@ -1,6 +1,7 @@
 ﻿(function() {
 	module.exports.vortaro = function() {
 		return {
+			'0': 'default',
 			'1': ' veces hemos dicho Holiiiiiiiiiiiiiiii! Putos enfermos...',
 			'2': 'Hi',
 			'3': 'hi',
@@ -9,8 +10,8 @@
 			'6': 'Club abierto',
 			'7': 'Club cerrado',
 			'8': 'No quedan mas mesas a tirar',
-			'9': 'No caben mas mesas en el despacho'
-			'10': 'Enjoy ma tune ma boi',
+			'9': 'No caben mas mesas en el despacho',
+			'10': 'Enjoy ma tune ma boi'
 		};
 	};
 })();
