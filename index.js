@@ -9,7 +9,7 @@ var connection = mysql.createConnection(process.env.JAWSDB_MARIA_URL);
 connection.connect();
 
 const bot = new Telebot(process.env.TOKEN);
-
+checkClub();
 bot.on(/^\/lang (.+$)/, (ctx, props) => {
     if (props.match[1] == "help") ctx.reply.text("catala, default, english, german, klingon, polish, portuguese-brazil, portuguese, quenya, russian, turkish");
     else {
@@ -17,6 +17,28 @@ bot.on(/^\/lang (.+$)/, (ctx, props) => {
         dict = lang.vortaro();
     }
 });
+
+function checkClub() {
+    setInterval(function(){
+      var d = new Date();
+      var h = d.getHours();
+      if (d.getHours() == 00 && d.getMinutes() == 00) closeClub();
+    }, 1000*60);
+}
+
+function closeClub() {
+  connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'stateCRUPC'", function(err, res) {
+    if (err) throw err;
+    var state = res[0]._Value;
+    if (state == "open") {
+      connection.query("UPDATE map_crupc SET _Value = 'closed' WHERE _Key = 'stateCRUPC'", function(err) {
+        if (err) throw err;
+      });
+      console.log("write");
+    }
+    console.log("closed");
+  });
+}
 
 bot.on('/showlang', (ctx) => {
     ctx.reply.text(dict['0'])
