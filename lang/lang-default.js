@@ -1,17 +1,17 @@
 ﻿(function() {
 	module.exports.vortaro = function() {
 		return {
-			'0': 'default',
-			'1': ' veces hemos dicho Holiiiiiiiiiiiiiiii! Putos enfermos...',
-			'2': 'Hi',
-			'3': 'hi',
-			'4': 'Holiiiiiiiiiiiiiiii!!',
-			'5': 'A ti no te hago ni puto caso',
-			'6': 'Club abierto',
-			'7': 'Club cerrado',
-			'8': 'No quedan mas mesas a tirar',
-			'9': 'No caben mas mesas en el despacho',
-			'10': 'Enjoy ma tune ma boi'
+			'lang_name': 'default',
+			'hi_times': ' veces hemos dicho Holiiiiiiiiiiiiiiii! Putos enfermos...',
+			'hi_big': 'Hi',
+			'hi_small': 'hi',
+			'hi_long': 'Holiiiiiiiiiiiiiiii!!',
+			'no_admin': 'A ti no te hago ni puto caso',
+			'open': 'Club abierto',
+			'closed': 'Club cerrado',
+			'no_tables': 'No quedan mas mesas a tirar',
+			'full_tables': 'No caben mas mesas en el despacho',
+			'enjoy_tune': 'Enjoy ma tune ma boi'
 		};
 	};
 })();

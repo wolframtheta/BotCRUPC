@@ -41,7 +41,7 @@ function closeClub() {
 }
 
 bot.on('/showlang', (ctx) => {
-    ctx.reply.text(dict['0'])
+    ctx.reply.text(dict['lang_name'])
 });
 bot.on('/stopspam', (ctx) => {
     if (ctx.from.username == process.env.administrator) {
@@ -50,7 +50,7 @@ bot.on('/stopspam', (ctx) => {
           if (err) throw err;
         });
     } else {
-        ctx.reply.text(dict['5']);
+        ctx.reply.text(dict['no_admin']);
     }
 });
 
@@ -61,7 +61,7 @@ bot.on('/startspam', (ctx) => {
           if (err) throw err;
         });
     } else {
-        ctx.reply.text(dict['5']);
+        ctx.reply.text(dict['no_admin']);
     }
 });
 
@@ -77,7 +77,7 @@ bot.on('/isopen', (ctx) => {
 bot.on('/countholis', (ctx) => {
   connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'counterHolis'", function(err, res) {
     if (err) throw err;
-    ctx.reply.text(res[0]._Value + dict['1']);
+    ctx.reply.text(res[0]._Value + dict['hi_times']);
   });
 });
 
@@ -126,7 +126,7 @@ bot.on('sticker', (ctx) => {
           });
         }
         console.log("open");
-        ctx.reply.text(dict['6']);
+        ctx.reply.text(dict['open']);
       }
       else if (ctx.sticker.emoji == '😒' && ctx.sticker.set_name == "CRUPC") {
         console.log("map:" + state);
@@ -137,12 +137,12 @@ bot.on('sticker', (ctx) => {
           console.log("write");
         }
         console.log("closed");
-        ctx.reply.text(dict['7']);
+        ctx.reply.text(dict['closed']);
       }
     });
   }
   else {
-  ctx.reply.text(dict['5']);
+  ctx.reply.text(dict['no_admin']);
   }
 
 });
@@ -158,7 +158,7 @@ function holis(ctx) {
             if (err) throw err;
         });
     });
-    ctx.reply.text(dict['4'])
+    ctx.reply.text(dict['hi_long'])
 }
 
 function kannaAtack(ctx) {
