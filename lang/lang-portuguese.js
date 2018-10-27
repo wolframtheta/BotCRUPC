@@ -1,17 +1,17 @@
 (function() {
 	module.exports.vortaro = function() {
 		return {
-			'lang_name': 'portuguese',
-			'hi_times': ' vezes que dissemos Oiiiiiiiiiiiiiiii! Idiotas...',
-			'hi_big': 'Oi',
-			'hi_small': 'oi',
-			'hi_long': 'Oiiiiiiiiiiiiiiii!!',
-			'no_admin': 'Não estou nem aí com você!',
-			'open': 'Clube aberto',
-			'closed': 'Clube fechado',
-            'no_tables': 'Não há mais tabelas para virar',
-            'full_tables': 'Mais tabelas podem caber no clube',
-			'enjoy_tune': 'Enjoy ma tune ma boi'
+			'0': 'portuguese',
+			'1': ' vezes que dissemos Oiiiiiiiiiiiiiiii! Idiotas...',
+			'2': 'Oi',
+			'3': 'oi',
+			'4': 'Oiiiiiiiiiiiiiiii!!',
+			'5': 'Não estou nem aí com você!',
+			'6': 'Clube aberto',
+			'7': 'Clube fechado',
+            '8': 'Não há mais tabelas para virar',
+            '9': 'Mais tabelas podem caber no clube',
+			'10': 'Enjoy ma tune ma boi'
 		};
 	};
 })();

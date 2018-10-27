@@ -1,17 +1,17 @@
 ﻿(function() {
 	module.exports.vortaro = function() {
 		return {
-			'lang_name': 'english',
-			'hi_times': 'It\'s time we said hellooooooooo! Sick...',
-			'hi_big': 'Hi',
-			'hi_small': 'hi',
-			'hi_long': 'Helloooooooooo!!',
-			'no_admin': 'I do not do you a fucking affair',
-			'open': 'Open club',
-			'closed': 'Closed club',
-			'no_tables': 'There are no more tables to flip',
-			'full_tables': 'No more tables can fit  in the club',
-			'enjoy_tune': 'Enjoy ma tune ma boi'
+			'0': 'english',
+			'1': 'It\'s time we said hellooooooooo! Sick...',
+			'2': 'Hi',
+			'3': 'hi',
+			'4': 'Helloooooooooo!!',
+			'5': 'I do not do you a fucking affair',
+			'6': 'Open club',
+			'7': 'Closed club',
+			'8': 'There are no more tables to flip',
+			'9': 'No more tables can fit  in the club',
+			'10': 'Enjoy ma tune ma boi'
 		};
 	};
 })();

@@ -45,14 +45,14 @@ function loadSendText(map, bot, connection, dict){
             if(stop == 'false') {
                 if (k == '/fliptable' || k == '/ragefliptable') {
                     if (table > 0) ctx.reply.text(e);
-                    else ctx.reply.text(dict['no_tables']);
+                    else ctx.reply.text(dict['8']);
                 }
                 else if (k == '/fliptables') {
                     if (table > 1)ctx.reply.text(e);
-                    else ctx.reply.text(dict['no_tables']);
+                    else ctx.reply.text(dict['8']);
                 }
                 else if (k == '/puttable' && table == 3) {
-                    ctx.reply.text(dict['full_tables']);
+                    ctx.reply.text(dict['9']);
                 }
                 else {
                     ctx.reply.text(e);

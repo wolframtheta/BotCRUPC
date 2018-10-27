@@ -1,17 +1,17 @@
 (function() {
 	module.exports.vortaro = function() {
 		return {
-			'lang_name': 'portuguese-brazil',
-			'hi_times': 'É tempo dizemos oláaaaaaaaaaaaaa! ',
-			'hi_big': 'Oi',
-			'hi_small': 'oi',
-			'hi_long': 'Oláaaaaaaaaa!!',
-			'no_admin': 'A você eu não faço nenhum caso',
-			'open': 'Clube aberto',
-			'closed': 'Clube fechado',
-            'no_tables': 'Não há mais mesas para virar',
-            'full_tables': 'Mais nenhuma mesa cabe no clube',
-			'enjoy_tune': 'Enjoy ma tune ma boi'
+			'0': 'portuguese-brazil',
+			'1': 'É tempo dizemos oláaaaaaaaaaaaaa! ',
+			'2': 'Oi',
+			'3': 'oi',
+			'4': 'Oláaaaaaaaaa!!',
+			'5': 'A você eu não faço nenhum caso',
+			'6': 'Clube aberto',
+			'7': 'Clube fechado',
+            '8': 'Não há mais mesas para virar',
+            '9': 'Mais nenhuma mesa cabe no clube',
+			'10': 'Enjoy ma tune ma boi'
 		};
 	};
 })();
