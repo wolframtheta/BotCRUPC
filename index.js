@@ -96,8 +96,8 @@ bot.on('/randomplaylist', (ctx) => {
   if ( 0.5 <= roulette && roulette < 0.6) ctx.reply.text('https://youtu.be/PfIB7h7rsOw');
   if ( 0.6 <= roulette && roulette < 0.7) ctx.reply.text('https://www.youtube.com/watch?v=UbQgXeY_zi4');
   if ( 0.7 <= roulette && roulette < 0.8) ctx.reply.text('https://www.youtube.com/watch?v=OBklXeUs6HU');
-  if ( 0.8 <= roulette && roulette < 0.9) ctx.reply.text('https://www.youtube.com/watch?v=5LitDGyxFh4');
-  if ( 0.9 <= roulette && roulette < 1) ctx.reply.text('https://www.youtube.com/watch?v=xy4evbxF40w');
+  if ( 0.8 <= roulette && roulette < 0.9) ctx.reply.text('https://www.youtube.com/watch?v=xy4evbxF40w');
+  if ( 0.9 <= roulette && roulette < 1)ctx.reply.text('https://www.youtube.com/watch?v=KmWjWFfcLIQ&t=932s');
 });
 
 bot.on(RegExp(/kawaii+/, "i"), (ctx) => {
