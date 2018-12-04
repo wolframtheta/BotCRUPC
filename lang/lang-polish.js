@@ -11,7 +11,7 @@
 			'closed': 'Klub zamknięty',
             'no_tables': 'Nie ma więcej stolików',
             'full_tables': 'W klubie nie ma więcej stołów',
-			'enjoy_tune': 'Enjoy ma tune ma boi'
+			'enjoy_tune': 'Ciesz się moją melodią mój bo'
 		};
 	};
 })();

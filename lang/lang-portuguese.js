@@ -11,7 +11,7 @@
 			'closed': 'Clube fechado',
             'no_tables': 'Não há mais tabelas para virar',
             'full_tables': 'Mais tabelas podem caber no clube',
-			'enjoy_tune': 'Enjoy ma tune ma boi'
+			'enjoy_tune': 'Aproveite minha música meu bo'
 		};
 	};
 })();
