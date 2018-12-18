@@ -81,6 +81,10 @@ bot.on('/countholis', (ctx) => {
   });
 });
 
+bot.on('/partidas', (ctx) => {
+    ctx.reply.text("https://docs.google.com/spreadsheets/d/1EwKgNWh2WUObYMFJfB-NotKiCPz8fTmhG4abx-THlFM/edit#gid=0");
+});
+
 loadCommands.loadUrls(bot);
 loadCommands.loadLenny(bot, connection, dict);
 loadCommands.loadSticker(bot);
@@ -241,6 +245,9 @@ bot.on('/help', (ctx) => {
         }, {
             name: "/lenny",
             desc: "How to pronounce"
+        }, {
+            name: "/partidas",
+            desc: "Show the link to the excel of partidas"
         }, {
             name: "/repository",
             desc: "T-this is my source code s-s-senpai... b-be gentle... (｡>_<｡)"
