@@ -105,9 +105,8 @@ bot.on('/randomplaylist', (ctx) => {
       'https://www.youtube.com/watch?v=xy4evbxF40w'
   ];
  
-  var index = Math.trunc(songs.lenght()*Math.random());
+  var index = Math.trunc(songs.length*Math.random());
   ctx.reply.text(songs[index]);
-
 });
 
 bot.on(RegExp(/kawaii+/, "i"), (ctx) => {
