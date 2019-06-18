@@ -6,11 +6,11 @@
 			'hi_big': 'Hi',
 			'hi_small': 'hi',
 			'hi_long': 'Holiiiiiiiiiiiiiiii!!',
-			'no_admin': 'A tu no et faig ni puto cas',
+			'no_admin': 'M\'entra per una orella i em surt per l\'altra.',
 			'open': 'Club obert',
 			'closed': 'Club tancat',
-    		'no_tables': 'No queden mes taules per tirar',
-    		'full_tables': 'No caben mes taules al despatx',
+    		'no_tables': 'No queden més taules per tirar',
+    		'full_tables': 'No hi caben més taules al despatx',
     		'enjoy_tune': 'Enjoy ma tune ma boi',
 		};
 	};
