@@ -184,7 +184,7 @@ function kannaAtack(ctx) {
                              "CAADBQADPQEAAhHsTwgtSje5XWFTaQI","CAADBQADPgEAAhHsTwiu4CgORjWQaQI","CAADBQADPwEAAhHsTwiK56bndPAnZwI",
                              "CAADBQADQQEAAhHsTwhr-9Ep0-ZvwQI","CAADBQADQAEAAhHsTwhZdn81emDM1AI","CAADBQADNAEAAhHsTwiCsq4UgEk05QI",
                              "CAADBQADMwEAAhHsTwgOGL07V0CZlAI","CAADBQADMgEAAhHsTwicRdiV65zXvQI","CAADBQADMQEAAhHsTwjyk_Fn-P_GKgI"];
-    var rand = Math.floor(Math.random() * kannaStickers.length) + 1;
+    var rand = Math.trim(Math.random() * kannaStickers.length);
     bot.sendSticker(ctx.chat.id, kannaStickers[rand]);
 }
 
