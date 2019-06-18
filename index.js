@@ -91,17 +91,23 @@ loadCommands.loadSticker(bot);
 
 bot.on('/randomplaylist', (ctx) => {
   ctx.reply.text(dict['enjoy_tune']);
-  var roulette = Math.random();
-  if ( 0 <= roulette && roulette < 0.1) ctx.reply.text('https://youtu.be/mobtxEJHhY4');
-  if ( 0.1 <= roulette && roulette < 0.2) ctx.reply.text('https://www.youtube.com/watch?v=XhQIXO0vUOM');
-  if ( 0.2 <= roulette && roulette < 0.3) ctx.reply.text('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-  if ( 0.3 <= roulette && roulette < 0.4) ctx.reply.text('https://youtu.be/L_jWHffIx5E?t=36s');
-  if ( 0.4 <= roulette && roulette < 0.5) ctx.reply.text('https://www.youtube.com/watch?v=n5rS9vNbCDg');
-  if ( 0.5 <= roulette && roulette < 0.6) ctx.reply.text('https://youtu.be/PfIB7h7rsOw');
-  if ( 0.6 <= roulette && roulette < 0.7) ctx.reply.text('https://www.youtube.com/watch?v=UbQgXeY_zi4');
-  if ( 0.7 <= roulette && roulette < 0.8) ctx.reply.text('https://www.youtube.com/watch?v=OBklXeUs6HU');
-  if ( 0.8 <= roulette && roulette < 0.9) ctx.reply.text('https://www.youtube.com/watch?v=KmWjWFfcLIQ&t=932s');
-  if ( 0.9 <= roulette && roulette < 1) ctx.reply.text('https://www.youtube.com/watch?v=xy4evbxF40w');
+
+  var songs = [
+      'https://youtu.be/mobtxEJHhY4',
+      'https://www.youtube.com/watch?v=XhQIXO0vUOM',
+      'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      'https://youtu.be/L_jWHffIx5E?t=36s',
+      'https://www.youtube.com/watch?v=n5rS9vNbCDg',
+      'https://youtu.be/PfIB7h7rsOw',
+      'https://www.youtube.com/watch?v=UbQgXeY_zi4',
+      'https://www.youtube.com/watch?v=OBklXeUs6HU',
+      'https://www.youtube.com/watch?v=KmWjWFfcLIQ&t=932s',
+      'https://www.youtube.com/watch?v=xy4evbxF40w'
+  ];
+ 
+  var index = Math.trunc(songs.lenght()*Math.random());
+  ctx.reply.text(songs[index]);
+
 });
 
 bot.on(RegExp(/kawaii+/, "i"), (ctx) => {
