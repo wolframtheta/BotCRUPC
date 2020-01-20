@@ -21,5 +21,9 @@
     "mysql": "^2.17.1",
     "node-telegram-bot-api": "^0.30.0",
     "telebot": "^1.2.6"
+  },
+  "scripts": {
+    "start": "node index.js"
   }
 }
+  

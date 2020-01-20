@@ -4,11 +4,35 @@ var loadCommands = require('./loadCommands');
 var fs = require('fs');
 var dict = lang.vortaro();
 var mysql = require('mysql');
-var connection = mysql.createConnection(process.env.JAWSDB_MARIA_URL);
+var connection = mysql.createConnection(process.env.DB_AUTH);
+
 
 connection.connect();
 
-const bot = new Telebot(process.env.TOKEN);
+function handleDisconnect() {
+  connection = mysql.createConnection(process.env.DB_AUTH); // Recreate the connection, since
+                                                  // the old one cannot be reused.
+
+  connection.connect(function(err) {              // The server is either down
+    if(err) {                                     // or restarting (takes a while sometimes).
+      console.log('error when connecting to db:', err);
+      setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+    }                                     // to avoid a hot loop, and to allow our node script to
+  });                                     // process asynchronous requests in the meantime.
+                                          // If you're also serving http, display a 503 error.
+  connection.on('error', function(err) {
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+      handleDisconnect();                         // lost due to either server restart, or a
+    } else {                                      // connnection idle timeout (the wait_timeout
+      throw err;                                  // server variable configures this)
+    }
+  });
+}
+
+handleDisconnect();
+
+const bot = new Telebot(process.env.TOKEN_BOT);
 checkClub();
 bot.on(/^\/lang (.+$)/, (ctx, props) => {
     if (props.match[1] == "help") ctx.reply.text("catala, default, english, german, klingon, polish, portuguese-brazil, portuguese, quenya, russian, turkish");
@@ -44,7 +68,7 @@ bot.on('/showlang', (ctx) => {
     ctx.reply.text(dict['0'])
 });
 bot.on('/stopspam', (ctx) => {
-    if (ctx.from.username == process.env.administrator) {
+    if (ctx.from.username == process.env.ADMIN) {
         console.log('stop spam true');
         connection.query("UPDATE map_crupc SET _Value = 'true' WHERE _Key = 'stopSpam'", function(err) {
           if (err) throw err;
@@ -55,7 +79,7 @@ bot.on('/stopspam', (ctx) => {
 });
 
 bot.on('/startspam', (ctx) => {
-    if (ctx.from.username == process.env.administrator) {
+    if (ctx.from.username == process.env.ADMIN) {
         console.log('stop spam false');
         connection.query("UPDATE map_crupc SET _Value = 'false' WHERE _Key = 'stopSpam'", function(err) {
           if (err) throw err;
@@ -98,7 +122,7 @@ bot.on(RegExp(/kawaii+/, "i"), (ctx) => {
 bot.on(/^hi$/gi, (ctx) => holis(ctx));
 
 bot.on('sticker', (ctx) => {
-  if (ctx.chat.id < 0 || (ctx.chat.id > 0 && ctx.from.username == process.env.administrator)) {
+  if (ctx.chat.id < 0 || (ctx.chat.id > 0 && ctx.from.username == process.env.ADMIN)) {
     connection.query("SELECT _Value FROM map_crupc WHERE _Key = 'stateCRUPC'", function(err, res) {
       if (err) throw err;
       var state = res[0]._Value;
@@ -163,7 +187,7 @@ function kannaAtack(ctx) {
     var rand = Math.floor(Math.random() * kannaStickers.length) + 1;
     bot.sendSticker(ctx.chat.id, kannaStickers[rand]);
 }
-/*
+
 //Keyboards
 var kMenuGeneral = bot.inlineKeyboard([
         [
@@ -217,6 +241,7 @@ var kId;
 var kActive;
 var kProject;
 var kFinished;
+var kPjs;
 
 //Global vars
 var step = 0;
@@ -227,6 +252,7 @@ var actualPartida = new Object();
 var chatId;
 var messageId;
 var textActualPartida;
+var userActivePartidasBlock = null;
 
 bot.on('/partidas', msg => {
     return bot.sendMessage(msg.chat.id, '¿Que partidas quieres ver?', {replyMarkup: kMenuGeneral});
@@ -239,18 +265,19 @@ bot.on('callbackQuery', msg => {
     if ((id = /^idA_\d+/.exec(msg.data))) {
         id = id.input.split('_')[1];
         idGame = id;
-        createTextShow(chatId, messageId, id, 'showActivePartidas'); 
+        createTextShow(chatId, messageId, id, 'showActivePartidas', msg); 
     } 
     else if ((id = /^idP_\d+/.exec(msg.data))) {
         id = id.input.split('_')[1];
         idGame = id;
-        createTextShow(chatId, messageId, id, 'showProjectPartidas');
+        createTextShow(chatId, messageId, id, 'showProjectPartidas', msg);
     } 
     else if ((id = /^idF_\d+/.exec(msg.data))) {
         id = id.input.split('_')[1];
         idGame = id;
-        createTextShow(chatId, messageId, id, 'showFinishedPartidas');
+        createTextShow(chatId, messageId, id, 'showFinishedPartidas', msg);
     } 
+    // Show Active Games
     else if (msg.data == 'showActivePartidas') {
         connection.query("SELECT * FROM partidas WHERE State = '1'", function(err, res) {
             if (err) throw err;
@@ -268,6 +295,7 @@ bot.on('callbackQuery', msg => {
             }
         });   
     } 
+    // Show Project Games
     else if (msg.data == 'showProjectPartidas') {
         connection.query("SELECT * FROM partidas WHERE State = '2'", function(err, res) {
             if (err) throw err;
@@ -285,6 +313,7 @@ bot.on('callbackQuery', msg => {
             }
         }); 
     } 
+    // Show Finished Games
     else if (msg.data == 'showFinishedPartidas') {
         connection.query("SELECT * FROM partidas WHERE State = '0'", function(err, res) {
             if (err) throw err;
@@ -302,41 +331,61 @@ bot.on('callbackQuery', msg => {
             }
         }); 
     } 
+    // Add Game
     else if (msg.data == 'addPartida') {
-        step = 1;
-        bot.sendMessage(msg.message.chat.id, 'OK. Enviame el nombre de la partida', {replyMarkup: kCancel});
-        partida = new Object();
+        if (userActivePartidasBlock == null) userActivePartidasBlock = msg.from.id;
+        if (!isPrivateChat(msg)) bot.sendMessage(msg.message.chat.id, 'Solo puedes anadir partidas hablandome en privado');
+        else if (isSameUserCreating(msg.from.id)) {
+            console.log(msg);
+            step = 1;
+            bot.sendMessage(msg.message.chat.id, 'OK. Enviame el nombre de la partida', {replyMarkup: kCancel});
+            partida = new Object();
+        }
+        else bot.sendMessage(msg.message.chat.id, 'Alguien esta creando ya una partida, esperate unos minutos');
     } 
+    // Edit Game
     else if ((id = /^editPartida_\d+/.exec(msg.data))) {
-        idGame = msg.data.split('_')[1];
-        kEditPartida = bot.inlineKeyboard([
-            [
-                bot.inlineButton('Nombre', {callback: 'editName'}),
-                bot.inlineButton('Master', {callback: 'editMaster'}),
-                bot.inlineButton('Mail', {callback: 'editMail'}),
-            ], 
-            [
-                bot.inlineButton('Sistema', {callback: 'editSystem'}),
-                bot.inlineButton('Fecha', {callback: 'editDay'}),
-                bot.inlineButton('Horario', {callback: 'editHour'}),
-            ],
-            [
-                bot.inlineButton('Personajes', {callback: 'editPjs'}),
-                bot.inlineButton('Estado', {callback: 'editState'}),
-            ],
-            [
-                bot.inlineButton('<< Atras', {callback: actionBack})
-            ]
-        ]);
-        bot.editMessageText({chatId, messageId}, '¿Que quieres modificar?', {replyMarkup: kEditPartida});
+        console.log(msg.from.id);
+        console.log(userActivePartidasBlock);
+        if (userActivePartidasBlock == null) userActivePartidasBlock = msg.from.id;
+        if (userActivePartidasBlock == msg.from.id) {
+
+            idGame = msg.data.split('_')[1];
+            kEditPartida = bot.inlineKeyboard([
+                [
+                    bot.inlineButton('Nombre', {callback: 'editName'}),
+                    bot.inlineButton('Master', {callback: 'editMaster'}),
+                    bot.inlineButton('Mail', {callback: 'editMail'}),
+                ], 
+                [
+                    bot.inlineButton('Sistema', {callback: 'editSystem'}),
+                    bot.inlineButton('Fecha', {callback: 'editDay'}),
+                    bot.inlineButton('Horario', {callback: 'editHour'}),
+                ],
+                [
+                    bot.inlineButton('Personajes', {callback: 'editPjs'}),
+                    bot.inlineButton('Estado', {callback: 'editState'}),
+                ],
+                [
+                    bot.inlineButton('<< Atras', {callback: actionBack})
+                ]
+            ]);
+            bot.editMessageText({chatId, messageId}, '¿Que quieres modificar?', {replyMarkup: kEditPartida});
+        }
+        else {
+            bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
+        }
     }
+    // Delete Partida
     else if ((id = /^deletePartida_\d+/.exec(msg.data))) {
         idGame = msg.data.split('_')[1];
         bot.sendMessage(chatId, 'Seguro que quieres eliminar esta partida?', {replyMarkup: kDeleteAccept});    
     } 
+    // General Menu
     else if (msg.data == 'menuGeneral') {
         bot.editMessageText({chatId, messageId}, '¿Que partidas quieres ver?', {replyMarkup: kMenuGeneral});
     } 
+    // Accept Game
     else if (msg.data == 'acceptPartida') {
         var q = "INSERT INTO partidas VALUES ('', '" + partida.Name + "', '" 
                                                      + partida.Master + "', '" 
@@ -353,12 +402,14 @@ bot.on('callbackQuery', msg => {
                 connection.query(q, function(err, res) {
                     if (err) throw err;
                     console.log(msg);
+                    userActivePartidasBlock = null;
                     return bot.answerCallbackQuery(chatId, 'Partida creada!!', true);
                 });
             });
         });
         bot.editMessageText({chatId, messageId}, '¿Que partidas quieres ver?', {parseMode: 'html', replyMarkup: kMenuGeneral});
     }
+    // Delete Game
     else if (msg.data == 'acceptDeletePartida') {
         connection.query("DELETE FROM partidas WHERE ID = '" + idGame + "'", function(err, res) {
             if (err) throw err;
@@ -366,58 +417,112 @@ bot.on('callbackQuery', msg => {
         });
         bot.editMessageText({chatId, messageId}, '¿Que partidas quieres ver?', {parseMode: 'html', replyMarkup: kMenuGeneral});
     }
+    // Edit Name
     else if (msg.data == 'editName') {
-        step = 'editName';
-        bot.editMessageText({chatId, messageId}, 'Nombre actual de la partida: <b>' + actualPartida.Name + "</b>\nEnviame el nuevo nombre de la partida.", {parseMode: 'html', replyMarkup: kCancel});
+        makeUserActive(msg);
+        if (userActivePartidasBlock == msg.from.id) {
+            step = 'editName';
+            bot.editMessageText({chatId, messageId}, 'Nombre actual de la partida: <b>' + actualPartida.Name + "</b>\nEnviame el nuevo nombre de la partida.", {parseMode: 'html', replyMarkup: kCancel});
+        } 
+        else bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
     }
+    // Edit Master
     else if (msg.data == 'editMaster') {
-        step = 'editMaster';
-        bot.editMessageText({chatId, messageId}, 'Master actual de la partida: <b>' + actualPartida.Master + "</b>\nEnviame el nuevo master de la partida.", {parseMode: 'html', replyMarkup: kCancel});
+        makeUserActive(msg);
+        if (userActivePartidasBlock == msg.from.id) {
+            step = 'editMaster';
+            bot.editMessageText({chatId, messageId}, 'Master actual de la partida: <b>' + actualPartida.Master + "</b>\nEnviame el nuevo master de la partida.", {parseMode: 'html', replyMarkup: kCancel});
+        } 
+        else bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
     }
+    // Edit Master's Mail
     else if (msg.data == 'editMail') {
-        step = 'editMail';
-        bot.editMessageText({chatId, messageId}, 'Mail actual de la partida: <b>' + actualPartida.Mail_Master + "</b>\nEnviame el nuevo mail de la partida.", {parseMode: 'html', replyMarkup: kCancel, replyMarkup: kCancel});
+        makeUserActive(msg);
+        if (userActivePartidasBlock == msg.from.id) {
+            step = 'editMail';
+            bot.editMessageText({chatId, messageId}, 'Mail actual de la partida: <b>' + actualPartida.Mail_Master + "</b>\nEnviame el nuevo mail de la partida.", {parseMode: 'html', replyMarkup: kCancel, replyMarkup: kCancel});
+        } 
+        else bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
     }
+    // Edit System
     else if (msg.data == 'editSystem') {
-        step = 'editSystem';
-        bot.editMessageText({chatId, messageId}, 'Sistema actual de la partida: <b>' + actualPartida.System + "</b>\nEnviame el nuevo sistema de la partida.", {parseMode: 'html'});
+        makeUserActive(msg);
+        if (userActivePartidasBlock == msg.from.id) {
+            step = 'editSystem';
+            bot.editMessageText({chatId, messageId}, 'Sistema actual de la partida: <b>' + actualPartida.System + "</b>\nEnviame el nuevo sistema de la partida.", {parseMode: 'html'});
+        } 
+        else bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
     }
+    // Edit Date
     else if (msg.data == 'editDay') {
-        step = 'editDay';
-        bot.editMessageText({chatId, messageId}, 'Dia actual de la partida: <b>' + actualPartida.Day + "</b>\nEnviame el nuevo dia de la partida.", {parseMode: 'html', replyMarkup: kCancel});
+        makeUserActive(msg);
+        if (userActivePartidasBlock == msg.from.id) {
+            step = 'editDay';
+            bot.editMessageText({chatId, messageId}, 'Dia actual de la partida: <b>' + actualPartida.Day + "</b>\nEnviame el nuevo dia de la partida.", {parseMode: 'html', replyMarkup: kCancel});
+        } 
+        else bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
     }
+    // Edit Schedule
     else if (msg.data == 'editHour') {
-        step = 'editHour';
-        bot.editMessageText({chatId, messageId}, 'Hora actual de la partida: <b>' + actualPartida.Hour_from + '-' + actualPartida.Hour_to + "</b>\nEnviame la nueva hora de la partida.", {parseMode: 'html', replyMarkup: kCancel});
+        makeUserActive(msg);
+        if (userActivePartidasBlock == msg.from.id) {
+            step = 'editHour';
+            bot.editMessageText({chatId, messageId}, 'Hora actual de la partida: <b>' + actualPartida.Hour_from + '-' + actualPartida.Hour_to + "</b>\nEnviame la nueva hora de la partida.", {parseMode: 'html', replyMarkup: kCancel});
+        } 
+        else bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
     }
+    // Edit PJs
     else if (msg.data == 'editPjs') {
-        step = 'editPjs';
-        var a = 'Pjs actuales de la partida:\n';
-        for (var i = 0; i < actualPartida.Pjs.length; i++) {
-            a += '▫️' + actualPartida.Pjs[i].NamePj + ' - ' + actualPartida.Pjs[i].RolePj + ' (' + actualPartida.Pjs[i].NamePlayer + ')' + "\n";
+        makeUserActive(msg);
+        if (userActivePartidasBlock == msg.from.id) {
+            step = 'editPjs';
+            var a = 'Pjs actuales de la partida:\n';
+            for (var i = 0; i < actualPartida.Pjs.length; i++) {
+                a += '▫️' + actualPartida.Pjs[i].NamePj + ' - ' + actualPartida.Pjs[i].RolePj + ' (' + actualPartida.Pjs[i].NamePlayer + ')' + "\n";
+            }
+            var keyboard = [];
+
+            for (var i = 0; i < actualPartida.Pjs.length; i++) {
+                keyboard.push([{'text': actualPartida.Pjs[i].NamePj}]);
+            }
+            keyboard.push([{'text': '<< Atras', 'callback_data': 'editPartida_' + idGame}]);
+            kPjs = bot.inlineKeyboard(keyboard);
+            console.log(kPjs);
+            console.log(a);
+            bot.editMessageText({chatId, messageId}, a, {parseMode: 'html', replyMarkup: kId});
         }
-        a += '\nEnviame los nuevos pjs de la partida.\n<i>Ejemplo: Miguel Angel Munoz/Kanna/MTG Kawaii Player</i>';
-        bot.editMessageText({chatId, messageId}, a, {parseMode: 'html', replyMarkup: kCancel});
+        else bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
     }
+    // Edit State
     else if (msg.data == 'editState') {
-        step = 'editState';
-        bot.editMessageText({chatId, messageId}, 'Estado actual de la partida: <b>' + actualPartida.State + "</b>\nEn que estado se encuentra ahora?", {parseMode: 'html', replyMarkup: kEditStates});
+        makeUserActive(msg);
+        if (userActivePartidasBlock == msg.from.id) {
+            step = 'editState';
+            bot.editMessageText({chatId, messageId}, 'Estado actual de la partida: <b>' + actualPartida.State + "</b>\nEn que estado se encuentra ahora?", {parseMode: 'html', replyMarkup: kEditStates});
+        } 
+        else bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
     }
+    // Edit State
     else if (/^editState/g.exec(msg.data) != null && step != "") {
-        var st = msg.data.split('editState')[1];
-        console.log("st " + st);
-        connection.query("UPDATE partidas SET State = \"" + stateToInt(st) + "\" WHERE ID = '" + actualPartida.ID + "'", function(err, res) {
-            if (err) throw err;
-            connection.query("SELECT * FROM partidas p, players pj WHERE p.ID = pj.Game && p.ID = " + actualPartida.ID, function(err, res) {
+        makeUserActive(msg);
+        if (userActivePartidasBlock == msg.from.id) {
+            var st = msg.data.split('editState')[1];
+            console.log("st " + st);
+            connection.query("UPDATE partidas SET State = \"" + stateToInt(st) + "\" WHERE ID = '" + actualPartida.ID + "'", function(err, res) {
                 if (err) throw err;
-                updatePartida(res);
-                createTextPartida();
-                bot.sendMessage(chatId, textActualPartida, {parseMode: 'html', replyMarkup: kEditPartida});
+                connection.query("SELECT * FROM partidas p, players pj WHERE p.ID = pj.Game && p.ID = " + actualPartida.ID, function(err, res) {
+                    if (err) throw err;
+                    updatePartida(res);
+                    createTextPartida();
+                    bot.sendMessage(chatId, textActualPartida, {parseMode: 'html', replyMarkup: kEditPartida});
+                });
+                
             });
-            
-        });
-        step = "";
+            step = "";
+        } 
+        else bot.editMessageText({chatId, messageId}, 'Alguien esta editando o creando una partida, esperate unos minutos');
     }
+    // Create State
     else if (/^createState/g.exec(msg.data) != null) {
         var st = msg.data.split('createState')[1];
         step = "";
@@ -436,12 +541,34 @@ bot.on('callbackQuery', msg => {
         text += '</pre>';
         bot.sendMessage(chatId, text, {parseMode: 'html', replyMarkup: kAddAccept})
     }
+    // Cancel Action
     else if (msg.data == 'cancelAction') {
         step = "";
+        userActivePartidasBlock = null;
         bot.sendMessage(chatId, 'Accion cancelada', true);
         bot.sendMessage(chatId, '¿Que partidas quieres ver?', {replyMarkup: kMenuGeneral});
     }
 });
+
+function makeUserActive(msg) {
+    if (userActivePartidasBlock == null) userActivePartidasBlock = msg.from.id;
+}
+function isSameUserCreating(username) {
+    return username == userActivePartidasBlock;
+}
+function isPrivateChat(msg) {
+    // console.log(msg);
+    if (typeof msg.chat == 'undefined') {
+        if (msg.message.chat.id > 0) return true;
+    }
+    else {
+        if (typeof msg.message == 'undefined') {
+            if (msg.chat.id > 0) return true;
+        }
+    }
+    console.log("isPrivateChat false");
+    return false;
+}
 
 function stateToInt(state) {
     if (/Activa|Active/gi.exec(state) != null) return '1';
@@ -455,13 +582,20 @@ function intToState(state) {
     else if (state == '2') return 'En Proyecto';
 }
 
-function createTextShow(chatId, messageId, id, action) {
+function createTextShow(chatId, messageId, id, action, msg) {
     actionBack = action;
-    var kMenuPartida = [[
-        bot.inlineButton('Editar partida', {callback: 'editPartida_' + id}), 
-        bot.inlineButton('Eliminar partida', {callback: 'deletePartida_' + id})
-    ]];
-    kMenuPartida.push([{'text': '<< Atras', 'callback_data': actionBack}]);
+    if (isPrivateChat(msg)) {
+        var kMenuPartida = [[
+                bot.inlineButton('Editar partida',  {callback: 'editPartida_' + id}), 
+                bot.inlineButton('Eliminar partida', {callback: 'deletePartida_' + id})
+        ]];
+        kMenuPartida.push([{'text': '<< Atras', 'callback_data': actionBack}]);
+    } else {
+        var kMenuPartida = [[
+            bot.inlineButton('<< Atras', {callback: actionBack})
+        ]];
+    }
+
     kId = bot.inlineKeyboard(kMenuPartida);
     connection.query("SELECT * FROM partidas p, players pj WHERE p.ID = pj.Game && p.ID = '" + id + "'", function(err, res) {
         createPartida(res);
@@ -509,32 +643,32 @@ function updatePartida(res) {
 
 bot.on('text', msg => {
     // console.log('A' + bot.getChatAdministrators('-1001123407471'));
-    if (step == 1) {
+    if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 1) {
         step = 2;
         partida.Name = msg.text;
         bot.sendMessage(msg.chat.id, 'OK. Enviame el nombre del Master', {replyMarkup: kCancel});
     }
-    else if (step == 2) {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 2) {
         step = 3;
         partida.Master = msg.text;
         bot.sendMessage(msg.chat.id, 'OK. Enviame una forma de contacto con el Master', {replyMarkup: kCancel});
     }
-    else if (step == 3) {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 3) {
         step = 4;
         partida.Mail = msg.text;
         bot.sendMessage(msg.chat.id, 'OK. Enviame el sistema de juego', {replyMarkup: kCancel});
     }
-    else if (step == 4) {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 4) {
         step = 5;
         partida.System = msg.text;
         bot.sendMessage(msg.chat.id, 'OK. Enviame que dia se va a jugar', {replyMarkup: kCancel});
     }
-    else if (step == 5) {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 5) {
         step = 6;
         partida.Day = msg.text;
         bot.sendMessage(msg.chat.id, 'OK. Enviame en que horario se va a jugar (Formato: <i>hora_inicio - hora_final</i>)', {parseMode: 'HTML', replyMarkup: kCancel});
     }
-    else if (step == 6) {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 6) {
         step = 7;
         var h = msg.text.split('-');
         partida.Hour_from = h[0];
@@ -542,7 +676,7 @@ bot.on('text', msg => {
         bot.sendMessage(msg.chat.id, 'OK. Enviame una lista de todos los jugadores con sus respetivos personajes y que clase son separado por `/` y con salto de linia al final de cada personaje .\n<i>Ejemplo: Miguel Angel Munoz/Kanna/Kawaii</i>', {parseMode:'HTML', replyMarkup: kCancel}); 
 
     }
-    else if (step == 7) {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 7) {
         step = 8;
         var pjs = msg.text.split('\n');
         partida.Pjs = [];
@@ -551,7 +685,7 @@ bot.on('text', msg => {
         }
         bot.sendMessage(msg.chat.id, 'OK. Finalmente pulsa en que estado esta, Activa, Finalizada o En Proyecto', {replyMarkup: kCreateStates});
     }
-    else if (step == 'editName') {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 'editName') {
         connection.query("UPDATE partidas SET Name = \"" + msg.text + "\" WHERE ID = '" + actualPartida.ID + "'", function(err, res) {
             if (err) throw err;
             connection.query("SELECT * FROM partidas p, players pj WHERE p.ID = pj.Game && p.ID = " + actualPartida.ID, function(err, res) {
@@ -563,8 +697,9 @@ bot.on('text', msg => {
             
         });
         step = "";
+        userActivePartidasBlock = null;
     }
-    else if (step == 'editMaster') {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 'editMaster') {
         connection.query("UPDATE partidas SET Master = \"" + msg.text + "\" WHERE ID = '" + actualPartida.ID + "'", function(err, res) {
             if (err) throw err;
             connection.query("SELECT * FROM partidas p, players pj WHERE p.ID = pj.Game && p.ID = " + actualPartida.ID, function(err, res) {
@@ -576,8 +711,9 @@ bot.on('text', msg => {
             
         });
         step = "";
+        userActivePartidasBlock = null;
     }
-    else if (step == 'editMail') {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 'editMail') {
         connection.query("UPDATE partidas SET Mail = \"" + msg.text + "\" WHERE ID = '" + actualPartida.ID + "'", function(err, res) {
             if (err) throw err;
             connection.query("SELECT * FROM partidas p, players pj WHERE p.ID = pj.Game && p.ID = " + actualPartida.ID, function(err, res) {
@@ -589,8 +725,9 @@ bot.on('text', msg => {
             
         });
         step = "";
+        userActivePartidasBlock = null;
     }
-    else if (step == 'editSystem') {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 'editSystem') {
         connection.query("UPDATE partidas SET System = \"" + msg.text + "\" WHERE ID = '" + actualPartida.ID + "'", function(err, res) {
             if (err) throw err;
             connection.query("SELECT * FROM partidas p, players pj WHERE p.ID = pj.Game && p.ID = " + actualPartida.ID, function(err, res) {
@@ -602,8 +739,9 @@ bot.on('text', msg => {
             
         });
         step = "";
+        userActivePartidasBlock = null;
     }
-    else if (step == 'editDay') {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 'editDay') {
         connection.query("UPDATE partidas SET Day = \"" + msg.text + "\" WHERE ID = '" + actualPartida.ID + "'", function(err, res) {
             if (err) throw err;
             connection.query("SELECT * FROM partidas p, players pj WHERE p.ID = pj.Game && p.ID = " + actualPartida.ID, function(err, res) {
@@ -615,8 +753,9 @@ bot.on('text', msg => {
             
         });
         step = "";
+        userActivePartidasBlock = null;
     }
-    else if (step == 'editHour') {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 'editHour') {
         var h = msg.text.split('-');
         connection.query("UPDATE partidas SET Hour_from = \"" + h[0] + "\", Hour_to = \"" + h[1] + "\" WHERE ID = '" + actualPartida.ID + "'", function(err, res) {
             if (err) throw err;
@@ -629,8 +768,9 @@ bot.on('text', msg => {
             
         });
         step = "";
+        userActivePartidasBlock = null;
     }
-    else if (step == 'editPjs') {
+    else if (isPrivateChat(msg) && isSameUserCreating(msg.from.id) && step == 'editPjs') {
         var pjs = msg.text.split('\n');
         actualPartida.Pjs = [];
         for (var i = 0; i < pjs.length; i++) {
@@ -653,8 +793,9 @@ bot.on('text', msg => {
         });
         
         step = "";
+        userActivePartidasBlock = null;
     }
-});*/
+});
 
 bot.on('/changelog', msg => {
     connection.query("SELECT * FROM changelog ORDER BY date DESC LIMIT 1", function(err, res) {
